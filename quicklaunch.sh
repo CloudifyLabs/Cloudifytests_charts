@@ -56,7 +56,7 @@ read -p "Enter the Namespace name: " org_name
 firstChar=${org_name:0:1}
 lastChar=${org_name: -1}
 len=`expr length "$org_name"`
-if [[ $org_name == *['!'@#\$%^\&*()_+?'";/=]* || $org_name =~ [[:upper:]] || $firstChar == *['!'@#\$%^\&*()_+?<>]* || $lastChar == *['!'@#\$%^\&*()_+?<>]* || $org_name = *[[:space:]]* || $firstChar = *[[:space:]]* || $lastChar = *[[:space:]]* || $len -lt 3 || $len -gt 20 ]]
+if [[ $org_name == *['!'@#\$%^\&*()_+?~";/=]* || $org_name =~ [[:upper:]] || $firstChar == *['!'@#\$%^\&*()_+?<>]* || $lastChar == *['!'@#\$%^\&*()_+?<>]* || $org_name = *[[:space:]]* || $firstChar = *[[:space:]]* || $lastChar = *[[:space:]]* || $len -lt 3 || $len -gt 20 ]]
   then
     echo "Invalid Namespace name : $org_name. Follow the conditions above conditions for namespace name."
   else 
