@@ -3,7 +3,7 @@
 
 
  # Git clone the repository
-sudo git clone  https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone --branch validation-test  https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
 cd Cloudifytests_charts
