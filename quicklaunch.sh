@@ -1,6 +1,11 @@
 # #!/bin/bash
 
 
+# Remove kube config file
+cd .kube
+sudo rm config
+cd ..
+
 
  # Git clone the repository
 sudo git clone --branch validation-test  https://github.com/CloudifyLabs/Cloudifytests_charts.git
