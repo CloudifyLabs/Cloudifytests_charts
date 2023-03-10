@@ -1,6 +1,11 @@
 # #!/bin/bash
 
 
+# Remove kube config file
+cd .kube
+sudo rm config
+cd ..
+
 
 # Remove kube config file
 cd .kube
@@ -62,7 +67,7 @@ read -p "Enter the Namespace name: " org_name
 firstChar=${org_name:0:1}
 lastChar=${org_name: -1}
 len=`expr length "$org_name"`
-if [[ $org_name == *['!'@#\$%^\&*()_+]* ]]
+if [[ $org_name == *['!'@#\$%^\&*()_+?~/=]* || $org_name =~ "." || $org_name =~ "<" || $org_name =~ "," || $org_name =~ ">" || $org_name =~ "|" || $org_name =~ ";" || $org_name =~ ":" || $org_name =~ "{" || $org_name =~ "}" || $org_name =~ "[" || $org_name =~ "]" || $org_name =~ "'" || $org_name =~ [[:upper:]] || $firstChar == *['!'@#\$%^\&*()_+?=-]* || $lastChar == *['!'@#\$%^\&*()_+?=-]* || $org_name = *[[:space:]]* || $firstChar = *[[:space:]]* || $lastChar = *[[:space:]]* || $len -lt 3 || $len -gt 20 ]]
   then
     echo "Invalid Namespace name : $org_name. Follow the conditions above conditions for namespace name."
   else 
@@ -96,7 +101,7 @@ read -p "Enter the Bucket name: " s3_bucket
 firstChar2=${s3_bucket:0:1}
 lastChar2=${s3_bucket: -1}
 len2=`expr length "$s3_bucket"`
-if [[ $s3_bucket == *['!'@#\$%^\&*()_+]* ]] 
+if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket =~ "." || $s3_bucket =~ "<" || $s3_bucket =~ ">" || $s3_bucket =~ "|" || $s3_bucket =~ ";" || $s3_bucket =~ ":" || $s3_bucket =~ "{" || $s3_bucket =~ "}" || $s3_bucket =~ "[" || $s3_bucket =~ "]" || $s3_bucket =~ "'" || $s3_bucket =~ [[:upper:]] || $firstChar2 == *['!'@#\$%^\&*()_+?=-]* || $lastChar2 == *['!'@#\$%^\&*()_+?=-]* || $s3_bucket = *[[:space:]]* || $firstChar2 = *[[:space:]]* || $lastChar2 = *[[:space:]]* || $len2 -lt 3 || $len2 -gt 63 ]] 
   then
     echo "Invalid Namespace name : $s3_bucket. Follow the conditions above conditions for namespace name."
   else 
@@ -174,7 +179,11 @@ helm template . \
 --set serviceaccount.metadata.namespace=$org_name \
 --set roleBinding.subjects.namespace=$org_name | kubectl create --namespace $org_name -f -
 
-
+var=$(kubectl get ns)
+if [[ -z "$var" ]]
+then 
+  echo -e "\nIncorrect details problem creating your environment.Please try with correct details. \n\n" 
+else
 
 # Get the hostname of the service in the specified namespace
 hostname=""
@@ -192,5 +201,7 @@ if [[ -z "$hostname" ]]; then
   echo "Failed to get the hostname."
   exit 1
 fi
-echo "Wait for 2 minutes and use this hostname to access the application"
+
 echo "The hostname of service is: $hostname"
+echo "Wait for 2 minutes and use this hostname to access the application"
+fi
