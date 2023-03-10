@@ -173,7 +173,11 @@ helm template . \
 --set serviceaccount.metadata.namespace=$org_name \
 --set roleBinding.subjects.namespace=$org_name | kubectl create --namespace $org_name -f -
 
-
+var=$(kubectl get ns)
+if [[ -z "$var" ]]
+then 
+  echo -e "\n Incorrect details problem creating your environment. Please try with correct details. \n\n" 
+else
 
 # Get the hostname of the service in the specified namespace
 hostname=""
@@ -194,3 +198,4 @@ fi
 
 echo "The hostname of service is: $hostname"
 echo "Wait for 2 minutes and use this hostname to access the application"
+fi
