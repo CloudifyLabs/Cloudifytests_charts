@@ -4,9 +4,9 @@
 
 
 # Remove kube config file
-cd .kube
-sudo rm config
-cd ..
+
+sudo rm /home/$USER/.kube/config
+
 
  # Git clone the repository
 sudo git clone --branch PL-2338 https://github.com/CloudifyLabs/Cloudifytests_charts.git
