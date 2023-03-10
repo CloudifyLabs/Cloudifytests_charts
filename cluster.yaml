@@ -7,10 +7,10 @@ metadata:
 nodeGroups:
 
     
-  - name: userapp
+  - name: test
     instanceType: t3.xlarge
     minSize: 1
-    maxSize: 4
+    maxSize: 200
     desiredCapacity: 1
     volumeType: gp3
     volumeSize: 50
