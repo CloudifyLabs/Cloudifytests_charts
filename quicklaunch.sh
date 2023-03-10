@@ -1,11 +1,6 @@
 # #!/bin/bash
 
 
-# Remove kube config file
-cd .kube
-sudo rm config
-cd ..
-
 
 # Remove kube config file
 cd .kube
