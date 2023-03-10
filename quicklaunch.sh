@@ -7,10 +7,16 @@ sudo rm config
 cd ..
 
 
+# Remove kube config file
+cd .kube
+sudo rm config
+cd ..
+
  # Git clone the repository
-sudo git clone --branch validation-test  https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone --branch PL-2338 https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
+
 cd Cloudifytests_charts
 
 # # Check if the operating system is Amazon Linux
