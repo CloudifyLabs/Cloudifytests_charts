@@ -80,12 +80,16 @@ echo -e "\nYour AWS access key is : $aws_key\n"
 read -p "Enter your AWS secret key: " aws_secret_key
 echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
 
-# Define the base URL and ingress host as input by the user
 
 
 # Define the AWS S3 bucket name and default region as input by the user
 read -p "Enter your AWS default region: " aws_region
 echo -e "\nYour AWS default region is : $aws_region\n"
+
+# Configure AWS CLI with the provided access key ID and secret access key
+aws configure set aws_access_key_id $aws_key
+aws configure set aws_secret_access_key $aws_secret_key
+aws configure set default.region $aws_region
 
 flag2=true
 
