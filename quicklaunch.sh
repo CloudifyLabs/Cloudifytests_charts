@@ -176,7 +176,7 @@ helm template . \
 var=$(kubectl get ns)
 if [[ -z "$var" ]]
 then 
-  echo -e "\n Incorrect details problem creating your environment. Please try with correct details. \n\n" 
+  echo -e "\nIncorrect details problem creating your environment.Please try with correct details. \n\n" 
 else
 
 # Get the hostname of the service in the specified namespace
