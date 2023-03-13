@@ -1,9 +1,8 @@
-# #!/bin/bash
+#!/bin/bash
 
 
 
-
-# Remove kube config file
+#Remove kube config file
 
 sudo rm /home/$USER/.kube/config
 
@@ -74,59 +73,67 @@ fi
 done
 
 
+
+
+flag2=true
+
+
+while $flag2 :
+do
+
 # Define the AWS access key and secret key as input by the user
+
 read -p "Enter your AWS access key: " aws_key
 echo -e "\nYour AWS access key is : $aws_key\n"
 read -p "Enter your AWS secret key: " aws_secret_key
 echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
 
+# Define the base URL and ingress host as input by the user
 
 
 # Define the AWS S3 bucket name and default region as input by the user
 read -p "Enter your AWS default region: " aws_region
 echo -e "\nYour AWS default region is : $aws_region\n"
-
-# Configure AWS CLI with the provided access key ID and secret access key
-aws configure set aws_access_key_id $aws_key
-aws configure set aws_secret_access_key $aws_secret_key
-aws configure set default.region $aws_region
-
-flag2=true
-
 echo -e "\nConditions for Bucket name.\n- Capital letters are not allowed. \n- Should start and end with digits or alphabet. \n- Spaces are not allowed. \n- Allowed alphabets , digits and - \n- Minimum 3 and Maximum 63 characters.\n"
 
-while $flag2 :
-do
 read -p "Enter the Bucket name: " s3_bucket
 firstChar2=${s3_bucket:0:1}
 lastChar2=${s3_bucket: -1}
 len2=`expr length "$s3_bucket"`
 if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket =~ "." || $s3_bucket =~ "<" || $s3_bucket =~ ">" || $s3_bucket =~ "|" || $s3_bucket =~ ";" || $s3_bucket =~ ":" || $s3_bucket =~ "{" || $s3_bucket =~ "}" || $s3_bucket =~ "[" || $s3_bucket =~ "]" || $s3_bucket =~ "'" || $s3_bucket =~ [[:upper:]] || $firstChar2 == *['!'@#\$%^\&*()_+?=-]* || $lastChar2 == *['!'@#\$%^\&*()_+?=-]* || $s3_bucket = *[[:space:]]* || $firstChar2 = *[[:space:]]* || $lastChar2 = *[[:space:]]* || $len2 -lt 3 || $len2 -gt 63 ]] 
   then
-    echo "Invalid Namespace name : $s3_bucket. Follow the conditions above conditions for namespace name."
+    echo "Invalid S3 Bucket name : $s3_bucket. Follow the conditions above conditions for namespace name."
   else 
-    flag=false
+    #flag2=true
     if [[ -n "$s3_bucket" ]] 
     then
       if [[ $aws_region == "us-east-1" ]]
       then 
-        aws s3api create-bucket --bucket=$s3_bucket --region=$aws_region
-        echo -e "\nYour Bucket created with name $s3_bucket\n"
+         var=$(aws s3api create-bucket --bucket=$s3_bucket --region=$aws_region)
+         if [[ "$var" =~ "Location" ]]
+         then
+          echo -e "\nBucket created with name $s3_bucket"
+          break
+        else
+          echo -e "\nBucket already exists or an error occurred.\nPlease try with another name.\n"
+          echo -e "\nEnter AWS Access key , Secret access key and AWS Region again.\n"
+          flag2=true
+        fi
       else
-        aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region #--region=$aws_region
-        echo -e "\nYour Bucket created with name $s3_bucket\n"
-      fi
-    else 
-      if [[ $aws_region == "us-east-1" ]]
-      then 
-        aws s3api create-bucket --bucket="session-$org_name" --region=$aws_region
-        echo -e "\nYour Bucket created as same as namespace name $org_name\n"
+       var2=$(aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region)
+       #echo "$var2 1"
+       if [[ "$var2" =~ "Location" ]]
+        then
+        echo -e "\nBucket created with name $s3_bucket\n"
+        break
       else
-        aws s3api create-bucket --bucket="session-$org_name" --create-bucket-configuration LocationConstraint=$aws_region #--region=$aws_region
-        echo -e "\nYour Bucket created as same as namespace name $org_name\n"
-      fi
+       echo -e "\nBucket already exists or an error occurred.\nPlease try with another name\n"
+       echo -e "\nEnter access key , secret access key and aws region again\n"
+       flag2=true
+       fi
+     fi
     fi
-      break
+     # break
   fi
   done
 
@@ -156,7 +163,7 @@ echo -e "\nYour EKS Cluster name is : $cluster_name\n"
 # Update KubeConfig
 aws eks update-kubeconfig --name $cluster_name --region $aws_region
 
-
+ 
 # Create a namespace with the name entered by the user
 kubectl create namespace $org_name
 
