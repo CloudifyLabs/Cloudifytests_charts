@@ -137,6 +137,18 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
 read -p "Enter your AWS ECR image repository: " ecr_repo
 echo -e "\nYour AWS ECR image repository tag is : $ecr_repo\n"
 
+read -p "Enter the tag for sessionbe: " sessionbe_tag
+echo -e "\nYour sessiobe tag is : $sessionbe_tag\n"
+
+read -p "Enter the tag for sessionui: " sessionui_tag
+echo -e "\nYour sessionui tag is : $sessionui_tag\n"
+
+read -p "Enter the tag for smcreate: " smcreate_tag
+echo -e "\nYour smcreate tag tag is : $smcreate_tag\n"
+
+read -p "Enter the tag for smdelete: " smdelete_tag
+echo -e "\nYour smdelete tag is : $smdelete_tag\n"
+
 read -p "Enter your cluster name: " cluster_name
 echo -e "\nYour EKS Cluster name is : $cluster_name\n"
 
@@ -166,11 +178,11 @@ helm template . \
 --set s3microservices.AWS_DEFAULT_REGION=$aws_region \
 --set sessionbe.serviceAccountName=$org_name --set nginxhpa.metadata.namespace=$org_name \
 --set be.ORG_NAME=$org_name \
---set sessionbe.image.repository="$ecr_repo:sessionbe_latest" \
+--set sessionbe.image.repository="$ecr_repo:sessionbe_$sessionbe_tag" \
 --set sessionUi.image.repository="$ecr_repo" \
---set sessionUi.image.tag=sessionui_latest \
---set smcreate.image.repository="$ecr_repo:smcreate_latest" \
---set smdelete.image.repository="$ecr_repo:smdelete_latest" \
+--set sessionUi.image.tag=sessionui_$sessionui_tag \
+--set smcreate.image.repository="$ecr_repo:smcreate_$smcreate_tag" \
+--set smdelete.image.repository="$ecr_repo:smdelete_$smdelete_tag" \
 --set sessionmanager.AWS_ECR_IMAGE=public.ecr.aws/r2h8i7a4 \
 --set smlogsvalues.ORG_NAME=$org_name \
 --set behpa.metadata.namespace=$org_name --set sessionManagaerhpa.metadata.namespace=$org_name \
