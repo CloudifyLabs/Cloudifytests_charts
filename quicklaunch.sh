@@ -109,27 +109,30 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
     then
       if [[ $aws_region == "us-east-1" ]]
       then 
-         var=$(aws s3api create-bucket --bucket=$s3_bucket --region=$aws_region)
-         if [[ "$var" =~ "Location" ]]
+         var=$(aws s3 ls $s3_bucket)
+         if [[ "$var" -eq 0 ]]
          then
-          echo -e "\nBucket created with name $s3_bucket"
-          break
-        else
           echo -e "\nBucket already exists or an error occurred.\nPlease try with another name.\n"
           echo -e "\nEnter AWS Access key , Secret access key and AWS Region again.\n"
           flag2=true
+        else
+          aws s3api create-bucket --bucket=$s3_bucket --region=$aws_region
+          echo -e "\nBucket created with name $s3_bucket"
+          break
         fi
       else
-       var2=$(aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region)
+       var2=$(aws s3 ls $s3_bucket)
+       #var2=$(aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region)
        #echo "$var2 1"
-       if [[ "$var2" =~ "Location" ]]
+       if [[ "$var2" -eq 0 ]]
         then
-        echo -e "\nBucket created with name $s3_bucket\n"
-        break
+        echo -e "\nBucket already exists or an error occurred.\nPlease try with another name.\n"
+        echo -e "\nEnter AWS Access key , Secret access key and AWS Region again.\n"
+        flag2=true
       else
-       echo -e "\nBucket already exists or an error occurred.\nPlease try with another name\n"
-       echo -e "\nEnter access key , secret access key and aws region again\n"
-       flag2=true
+       aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region
+       echo -e "\nBucket created with name $s3_bucket"
+       break
        fi
      fi
     fi
@@ -173,6 +176,8 @@ helm repo add autoscaler https://kubernetes.github.io/autoscaler
 helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name \
 --set awsRegion=$aws_region
 
+kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/$cluster_name","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+
 
 
 
@@ -202,7 +207,7 @@ helm template . \
 
 echo -e "\nWait for sometime.\n"
 sleep 30
-var_status=$(kubectl delete pods --field-selector status.phase=Pending -n $org_name)
+var_status=$(kubectl delete pods --field-selector status.phase=Pending -n test)
 if [[ "$var_status" =~ "No resources found" ]]
 then
 var=$(kubectl get ns)
@@ -233,7 +238,7 @@ fi
 else
 #echo -e "$var"
 echo -e "\nSomething went wrong Wait for sometime for the  namespace to be deleted\n"
-kubectl delete ns $org_name
+kubectl delete ns test
 echo -e "\nNamespace deleted\nTry to run the command again\n"
 fi
 
