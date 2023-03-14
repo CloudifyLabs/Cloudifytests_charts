@@ -109,7 +109,8 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
     then
       if [[ $aws_region == "us-east-1" ]]
       then 
-         var=$(aws s3 ls $s3_bucket)
+         aws s3 ls $s3_bucket
+         var=$(echo $?)
          if [[ "$var" -eq 0 ]]
          then
           echo -e "\nBucket already exists or an error occurred.\nPlease try with another name.\n"
@@ -121,7 +122,8 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
           break
         fi
       else
-       var2=$(aws s3 ls $s3_bucket)
+       aws s3 ls $s3_bucket
+       var2=$(echo $?)
        #var2=$(aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region)
        #echo "$var2 1"
        if [[ "$var2" -eq 0 ]]
