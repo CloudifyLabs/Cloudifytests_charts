@@ -41,8 +41,16 @@ echo -e "\nKindly check all the details in cluster.yaml If you want to create th
 read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
 
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
+  echo -e "\nEnter your cluster details\n"
+  read -p "Enter the name of the cluster" $cluster_name2
+  read -p "Enter your AWS default region where you want to create your cluster" $aws_region2
+  read -p "Enter the name of node group" $ng_name
+  read -p "Enter the max no .of nodes" $max_node
+  read -p "Enter the min no .of nodes" $min_node
+  
   set -e
-  eksctl create cluster --name dev  --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 3 --nodes-min 1 --nodes-max 4
+  eksctl create cluster --name $cluster_name2  --region $aws_region2 --nodegroup-name $ng_name --node-type t3.xlarge --nodes 3 --nodes-min $min_node --nodes-max $max_node
+  echo -e "\nYour Cluster will be created with name $cluster_name2 in AWS region $aws_region2\n"
   #eksctl create cluster -f cluster.yaml
 
 else 
