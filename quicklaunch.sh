@@ -218,7 +218,7 @@ helm template . \
 #Roll back Code
 
 echo -e "\nWait for sometime.\n"
-sleep 30
+sleep 60
 var_status=$(kubectl delete pods --field-selector status.phase=Pending -n $org_name)
 if [[ "$var_status" =~ "No resources found" ]]
 then
