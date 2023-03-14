@@ -1,13 +1,13 @@
 apiVersion: eksctl.io/v1alpha5
 kind: ClusterConfig
 metadata:
-  name: marketplace
+  name: marketplace2
   region: us-east-1
   version: "1.22"
 nodeGroups:
 
     
-  - name: test
+  - name: test1
     instanceType: t3.xlarge
     minSize: 1
     maxSize: 400
