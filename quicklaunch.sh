@@ -8,7 +8,7 @@ sudo rm /home/$USER/.kube/config
 
 
  # Git clone the repository
-sudo git clone  https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
 
@@ -39,9 +39,19 @@ aws configure
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
 read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
-set -e
+
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
-  eksctl create cluster -f cluster.yaml 
+  echo -e "\nEnter your cluster details\n"
+  read -p "Enter the name of the cluster" $cluster_name2
+  read -p "Enter your AWS default region where you want to create your cluster" $aws_region2
+  read -p "Enter the name of node group" $ng_name
+  read -p "Enter the max no .of nodes" $max_node
+  read -p "Enter the min no .of nodes" $min_node
+  
+  set -e
+  eksctl create cluster --name $cluster_name2  --region $aws_region2 --nodegroup-name $ng_name --node-type t3.xlarge --nodes 3 --nodes-min $min_node --nodes-max $max_node
+  echo -e "\nYour Cluster will be created with name $cluster_name2 in AWS region $aws_region2\n"
+  #eksctl create cluster -f cluster.yaml
 
 else 
   echo "This application will be deployed on your own Cluster."
