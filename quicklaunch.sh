@@ -41,7 +41,9 @@ echo -e "\nKindly check all the details in cluster.yaml If you want to create th
 read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
 
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
-  eksctl create cluster -f cluster.yaml
+  set -e
+  eksctl create cluster --name dev  --region us-east-1 --nodegroup-name standard-workers --node-type t3.micro --nodes 3 --nodes-min 1 --nodes-max 4
+  #eksctl create cluster -f cluster.yaml
 
 else 
   echo "This application will be deployed on your own Cluster."
