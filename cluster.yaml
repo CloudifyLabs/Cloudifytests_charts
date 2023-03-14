@@ -10,7 +10,7 @@ nodeGroups:
   - name: test
     instanceType: t3.xlarge
     minSize: 1
-    maxSize: 200
+    maxSize: 400
     desiredCapacity: 1
     volumeType: gp3
     volumeSize: 50

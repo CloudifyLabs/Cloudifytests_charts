@@ -173,6 +173,8 @@ helm repo add autoscaler https://kubernetes.github.io/autoscaler
 helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name \
 --set awsRegion=$aws_region
 
+kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/$cluster_name","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+
 
 
 
@@ -198,12 +200,18 @@ helm template . \
 --set serviceaccount.metadata.namespace=$org_name \
 --set roleBinding.subjects.namespace=$org_name | kubectl create --namespace $org_name -f -
 
+#Roll back Code
+
+echo -e "\nWait for sometime.\n"
+sleep 30
+var_status=$(kubectl delete pods --field-selector status.phase=Pending -n test)
+if [[ "$var_status" =~ "No resources found" ]]
+then
 var=$(kubectl get ns)
 if [[ -z "$var" ]]
 then 
   echo -e "\nIncorrect details problem creating your environment.Please try with correct details. \n\n" 
 else
-
 # Get the hostname of the service in the specified namespace
 hostname=""
 for i in {1..5}; do
@@ -224,3 +232,10 @@ fi
 echo "The hostname of service is: $hostname"
 echo "Wait for 2 minutes and use this hostname to access the application"
 fi
+else
+#echo -e "$var"
+echo -e "\nSomething went wrong Wait for sometime for the  namespace to be deleted\n"
+kubectl delete ns test
+echo -e "\nNamespace deleted\nTry to run the command again\n"
+fi
+
