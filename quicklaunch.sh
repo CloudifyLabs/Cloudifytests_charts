@@ -119,7 +119,7 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
     then
       if [[ $aws_region == "us-east-1" ]]
       then 
-         aws s3 ls $s3_bucket
+         li=$(aws s3 ls $s3_bucket)
          var=$(echo $?)
          if [[ "$var" -eq 0 ]]
          then
@@ -132,7 +132,7 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
           break
         fi
       else
-       aws s3 ls $s3_bucket
+       li2=$(aws s3 ls $s3_bucket)
        var2=$(echo $?)
        #var2=$(aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region)
        #echo "$var2 1"
