@@ -39,9 +39,9 @@ aws configure
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
 read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
-
+set -e
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
-  eksctl create cluster -f cluster.yaml
+  eksctl create cluster -f cluster.yaml 
 
 else 
   echo "This application will be deployed on your own Cluster."
