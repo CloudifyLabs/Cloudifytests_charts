@@ -204,7 +204,7 @@ helm template . \
 
 echo -e "\nWait for sometime.\n"
 sleep 30
-var_status=$(kubectl delete pods --field-selector status.phase=Pending -n test)
+var_status=$(kubectl delete pods --field-selector status.phase=Pending -n $org_name)
 if [[ "$var_status" =~ "No resources found" ]]
 then
 var=$(kubectl get ns)
@@ -235,7 +235,7 @@ fi
 else
 #echo -e "$var"
 echo -e "\nSomething went wrong Wait for sometime for the  namespace to be deleted\n"
-kubectl delete ns test
+kubectl delete ns $org_name
 echo -e "\nNamespace deleted\nTry to run the command again\n"
 fi
 
