@@ -32,7 +32,7 @@ spec:
         {{- end }}
     spec:
       containers:
-      - image: {{ template "sessionUi.image" . }}
+      - image: {{ .Values.sessionUi.image.repository }}
         name: session-ui
         imagePullPolicy: {{ .Values.sessionUi.image.pullPolicy }}
 #        args: ["-session-uri", "http://{{ template "cloudifytests.name" . }}-nginx/cloudifytests", "-listen", ":8000"]
