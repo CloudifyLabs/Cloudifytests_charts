@@ -42,6 +42,7 @@ read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip 
 
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
 #   echo -e "\nEnter your cluster details\n"
+
    read -p "Enter the name of the cluster (default name - marketplace): " cluster_name2
    if [[ -z $cluster_name2 ]]
    then
