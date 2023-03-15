@@ -58,7 +58,7 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    fi
    echo -e "\nYour AWS region will be : $aws_region2\n"
 
-   read -p "Enter the name of node group : " ng_name
+   read -p "Enter the name of node group (default name - worker) : " ng_name
    if [[ -z $ng_name ]]
    then
     ng_name=worker
@@ -72,8 +72,8 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
   #  fi
   #  echo -e "\nMinimum nodes will be : $min_node\n"
 
-
-   read -p "Enter the max no .of nodes (default - 4): " max_node
+   echo -e "\nFor running 2 sessions you need 1 node. Enter the no .of maximum nodes according to your need.\n"
+   read -p "Enter the  no .of maximum nodes (default - 4): " max_node
    if [[ -z $max_node ]]
    then
     max_node=4
