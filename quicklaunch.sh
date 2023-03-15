@@ -42,16 +42,100 @@ read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip 
 
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
 #   echo -e "\nEnter your cluster details\n"
-#   read -p "Enter the name of the cluster" $cluster_name2
-#   read -p "Enter your AWS default region where you want to create your cluster" $aws_region2
-#   read -p "Enter the name of node group" $ng_name
-#   read -p "Enter the max no .of nodes" $max_node
-#   read -p "Enter the min no .of nodes" $min_node
+
+   read -p "Enter the name of the cluster (default name - marketplace): " cluster_name2
+   if [[ -z $cluster_name2 ]]
+   then
+    cluster_name2=marketplace
+   fi
+   echo -e "\nYour Cluster Name will be : $cluster_name2\n"
+
+
+   read -p "Enter your AWS region where you want to create your cluster (default AWS region - us-east-1): " aws_region2
+   if [[ -z $aws_region2 ]]
+   then
+    aws_region2=us-east-1
+   fi
+   echo -e "\nYour AWS region will be : $aws_region2\n"
+
+   read -p "Enter the name of node group : " ng_name
+   if [[ -z $ng_name ]]
+   then
+    ng_name=worker
+   fi
+   echo -e "\nYour NodeGroup Name will be : $ng_name\n"
+   
+  #  read -p "Enter the min no .of nodes : " min_node
+  #  if [[ -z $min_node ]]
+  #  then
+  #   min_node=1
+  #  fi
+  #  echo -e "\nMinimum nodes will be : $min_node\n"
+
+
+   read -p "Enter the max no .of nodes (default - 4): " max_node
+   if [[ -z $max_node ]]
+   then
+    max_node=4
+   fi
+   echo -e "\nMaximum nodes will be : $max_node\n"
+
+ # Generate the cluster.yaml file with the custom name
+sudo bash -c "cat <<EOF > cluster.yaml
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+metadata:
+  name: $cluster_name2
+  region: $aws_region2
   
+nodeGroups:
+  - name: $ng_name
+    instanceType: t3.xlarge
+    minSize: 1
+    maxSize: $max_node
+    desiredCapacity: 1
+    volumeType: gp3
+    volumeSize: 50
+    kubeletExtraConfig:
+        kubeReserved:
+            cpu: "200m"
+            memory: "200Mi"
+            ephemeral-storage: "1Gi"
+        kubeReservedCgroup: "/kube-reserved"
+        systemReserved:
+            cpu: "200m"
+            memory: "300Mi"
+            ephemeral-storage: "1Gi"
+        evictionHard:
+            memory.available:  "100Mi"
+            nodefs.available: "10%"
+        featureGates:
+            RotateKubeletServerCertificate: true
+    
+    
+    labels: {role: worker}
+    tags:
+      nodegroup-role: worker
+    iam:
+      withAddonPolicies:
+        externalDNS: true
+        certManager: true
+        imageBuilder: true
+        autoScaler: true
+        appMesh: true
+        appMeshPreview: true
+        ebs: true
+        efs: true
+        albIngress: true
+        xRay: true
+        cloudWatch: true
+
+EOF"
+
   set -e
-#   eksctl create cluster --name $cluster_name2  --region $aws_region2 --nodegroup-name $ng_name --node-type t3.xlarge --nodes 3 --nodes-min $min_node --nodes-max $max_node
-#   echo -e "\nYour Cluster will be created with name $cluster_name2 in AWS region $aws_region2\n"
   eksctl create cluster -f cluster.yaml
+
+  eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
 
 else 
   echo "This application will be deployed on your own Cluster."
@@ -82,12 +166,7 @@ if [[ $org_name == *['!'@#\$%^\&*()_+?~/=]* || $org_name =~ "." || $org_name =~ 
 fi
 done
 
-
-
-
 flag2=true
-
-
 while $flag2 :
 do
 
@@ -156,20 +235,30 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "," || $s3_bucket 
 
 
 # Define the AWS ECR image repository and tag as input by the user
-read -p "Enter your AWS ECR image repository: " ecr_repo
-echo -e "\nYour AWS ECR image repository tag is : $ecr_repo\n"
 
-read -p "Enter the tag for sessionbe: " sessionbe_tag
-echo -e "\nYour sessiobe tag is : $sessionbe_tag\n"
+read -p "Enter your CONTAINER IMAGES repository link for smcreate: " create
+echo -e "\nYour AWS ECR image repository tag is : $create\n"
 
-read -p "Enter the tag for sessionui: " sessionui_tag
-echo -e "\nYour sessionui tag is : $sessionui_tag\n"
+read -p "Enter your CONTAINER IMAGES repository link for sessionUi: " Ui
+echo -e "\nYour AWS ECR image repository tag is : $Ui\n"
 
-read -p "Enter the tag for smcreate: " smcreate_tag
-echo -e "\nYour smcreate tag tag is : $smcreate_tag\n"
+read -p "Enter your CONTAINER IMAGES repository link for sessionbe: " be
+echo -e "\nYour AWS ECR image repository tag is : $be\n"
 
-read -p "Enter the tag for smdelete: " smdelete_tag
-echo -e "\nYour smdelete tag is : $smdelete_tag\n"
+read -p "Enter your CONTAINER IMAGES repository link for smdelete: " delete
+echo -e "\nYour AWS ECR image repository tag is : $delete\n"
+
+# read -p "Enter the tag for sessionbe: " sessionbe_tag
+# echo -e "\nYour sessiobe tag is : $sessionbe_tag\n"
+
+# read -p "Enter the tag for sessionui: " sessionui_tag
+# echo -e "\nYour sessionui tag is : $sessionui_tag\n"
+
+# read -p "Enter the tag for smcreate: " smcreate_tag
+# echo -e "\nYour smcreate tag tag is : $smcreate_tag\n"
+
+# read -p "Enter the tag for smdelete: " smdelete_tag
+# echo -e "\nYour smdelete tag is : $smdelete_tag\n"
 
 read -p "Enter your cluster name: " cluster_name
 echo -e "\nYour EKS Cluster name is : $cluster_name\n"
@@ -202,11 +291,10 @@ helm template . \
 --set s3microservices.AWS_DEFAULT_REGION=$aws_region \
 --set sessionbe.serviceAccountName=$org_name --set nginxhpa.metadata.namespace=$org_name \
 --set be.ORG_NAME=$org_name \
---set sessionbe.image.repository="$ecr_repo:sessionbe_$sessionbe_tag" \
---set sessionUi.image.repository="$ecr_repo" \
---set sessionUi.image.tag=sessionui_$sessionui_tag \
---set smcreate.image.repository="$ecr_repo:smcreate_$smcreate_tag" \
---set smdelete.image.repository="$ecr_repo:smdelete_$smdelete_tag" \
+--set sessionbe.image.repository="$be" \
+--set sessionUi.image.repository="$Ui" \
+--set smcreate.image.repository="$create" \
+--set smdelete.image.repository="$delete" \
 --set sessionmanager.AWS_ECR_IMAGE=public.ecr.aws/r2h8i7a4 \
 --set smlogsvalues.ORG_NAME=$org_name \
 --set behpa.metadata.namespace=$org_name --set sessionManagaerhpa.metadata.namespace=$org_name \
@@ -245,7 +333,7 @@ if [[ -z "$hostname" ]]; then
 fi
 
 echo "The hostname of service is: $hostname"
-echo "Wait for 2 minutes and use this hostname to access the application"
+echo "Wait for 1 minutes and use this hostname to access the application"
 fi
 else
 #echo -e "$var"

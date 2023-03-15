@@ -29,24 +29,4 @@ nodeGroups:
             nodefs.available: "10%"
         featureGates:
             RotateKubeletServerCertificate: true
-    ssh:
-      allow: true
-      publicKeyName: "cloudifytests"
-
-
-    labels: {role: worker}
-    tags:
-      nodegroup-role: worker
-    iam:
-      withAddonPolicies:
-        externalDNS: true
-        certManager: true
-        imageBuilder: true
-        autoScaler: true
-        appMesh: true
-        appMeshPreview: true
-        ebs: true
-        efs: true
-        albIngress: true
-        xRay: true
-        cloudWatch: true
+    

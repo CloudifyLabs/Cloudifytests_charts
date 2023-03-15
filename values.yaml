@@ -73,7 +73,7 @@ sessionUi:
   image:
     registry:
     repository: cloudify
-    tag: cloudify
+    #tag: cloudify
     pullPolicy: Always
   replicas: 1
   minReadySeconds: 15
