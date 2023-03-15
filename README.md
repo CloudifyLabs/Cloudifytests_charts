@@ -41,9 +41,9 @@ Once the script has completed execution, the application will be deployed to you
 
 
 **NOTE**
-
+```
 Whenever there are changes in AWS shell script. Always logout and then login.
 Script will work correctly.
-
+```
 
    
