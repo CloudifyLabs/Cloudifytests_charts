@@ -39,11 +39,11 @@ All of the fields listed above must be provided by the user in order for the scr
 
 Once the script has completed execution, the application will be deployed to your Kubernetes cluster in the specified namespace. You can use the LoadBalancer URL to access the application. 
 
----
+
 **NOTE**
 
 Whenever there are changes in AWS shell script. Always logout and then login.
 Script will work correctly.
 
----
+
    
