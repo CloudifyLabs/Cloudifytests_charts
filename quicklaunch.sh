@@ -183,7 +183,7 @@ echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
 # Define the AWS S3 bucket name and default region as input by the user
 read -p "Enter your AWS default region: " aws_region
 echo -e "\nYour AWS default region is : $aws_region\n"
-echo -e "\nConditions for Bucket name.\n- Capital letters are not allowed. \n- Should start and end with digits or alphabet. \n- Spaces are not allowed. \n- Allowed alphabets , digits and - \n- Minimum 3 and Maximum 63 characters.\nDon't use test keyword in the bucket name.\n"
+echo -e "\nConditions for Bucket name.\n- Capital letters are not allowed. \n- Should start and end with digits or alphabet. \n- Spaces are not allowed. \n- Allowed alphabets , digits and - \n- Minimum 3 and Maximum 63 characters.\nDon't use test keyword in the bucket name.\nPlease do not use test keyword in your bucket name.\n"
 
 read -p "Enter the Bucket name: " s3_bucket
 firstChar2=${s3_bucket:0:1}
