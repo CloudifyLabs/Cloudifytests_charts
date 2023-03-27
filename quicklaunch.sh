@@ -136,6 +136,15 @@ EOF"
   eksctl create cluster -f cluster.yaml
 
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+  helm repo add autoscaler https://kubernetes.github.io/autoscaler
+
+  helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 \
+  --set awsRegion=$aws_region2
+
+  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+
+
+
 
 else 
   echo "This application will be deployed on your own Cluster."
@@ -145,6 +154,13 @@ else
 
   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
   aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
+  helm repo add autoscaler https://kubernetes.github.io/autoscaler
+
+  helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
+  --set awsRegion=$p_aws_region
+
+  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+
 fi
 
 flag=true
@@ -270,14 +286,6 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
  
 # Create a namespace with the name entered by the user
 kubectl create namespace $org_name
-
-
-helm repo add autoscaler https://kubernetes.github.io/autoscaler
-
-helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name \
---set awsRegion=$aws_region
-
-kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
 
 
