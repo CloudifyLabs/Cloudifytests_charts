@@ -260,12 +260,12 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
 # read -p "Enter the tag for smdelete: " smdelete_tag
 # echo -e "\nYour smdelete tag is : $smdelete_tag\n"
 
-read -p "Enter your cluster name: " cluster_name
-echo -e "\nYour EKS Cluster name is : $cluster_name\n"
+# read -p "Enter your cluster name: " cluster_name
+# echo -e "\nYour EKS Cluster name is : $cluster_name\n"
 
 
 # Update KubeConfig
-aws eks update-kubeconfig --name $cluster_name --region $aws_region
+# aws eks update-kubeconfig --name $p_cluster_name --region $aws_region
 
  
 # Create a namespace with the name entered by the user
