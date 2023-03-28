@@ -207,7 +207,7 @@ lastChar2=${s3_bucket: -1}
 len2=`expr length "$s3_bucket"`
 if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "test" || $s3_bucket =~ "," || $s3_bucket =~ "." || $s3_bucket =~ "<" || $s3_bucket =~ ">" || $s3_bucket =~ "|" || $s3_bucket =~ ";" || $s3_bucket =~ ":" || $s3_bucket =~ "{" || $s3_bucket =~ "}" || $s3_bucket =~ "[" || $s3_bucket =~ "]" || $s3_bucket =~ "'" || $s3_bucket =~ [[:upper:]] || $firstChar2 == *['!'@#\$%^\&*()_+?=-]* || $lastChar2 == *['!'@#\$%^\&*()_+?=-]* || $s3_bucket = *[[:space:]]* || $firstChar2 = *[[:space:]]* || $lastChar2 = *[[:space:]]* || $len2 -lt 3 || $len2 -gt 63 ]] 
   then
-    echo "Invalid S3 Bucket name : $s3_bucket. Follow the conditions above conditions for namespace name."
+    echo -e "\nInvalid S3 Bucket name : $s3_bucket. Follow the conditions above conditions for bucket name.\n"
   else 
     #flag2=true
     if [[ -n "$s3_bucket" ]] 
