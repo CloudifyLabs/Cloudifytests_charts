@@ -236,6 +236,8 @@ be:
   LOG_GROUP_NAME: "org_backend"
   BASE_DOMAIN_NAME: ".cloudifytests.io"
   ENABLE_CLOUDWATCH_LOGGING: "false"
+  HOST: 0.0.0.0
+  PORT: 5000
 
 nginxhpa:
   apiVersion: autoscaling/v2beta2
