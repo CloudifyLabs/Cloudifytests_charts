@@ -78,6 +78,10 @@ spec:
           value: {{ .Values.smlogsvalues.DEBUG_MODE | quote }}
         - name: ORG_NAME
           value: {{ .Values.smlogsvalues.ORG_NAME }}
+        - name: HOST
+          value: {{ .Values.be.HOST | quote }}
+        - name: PORT
+          value: {{ .Values.be.PORT | quote }}
         - name: LOG_FORMAT
           value: {{ .Values.smlogsvalues.LOG_FORMAT | quote }}   
         - name: LOG_LEVEL
