@@ -309,6 +309,7 @@ helm template . \
 --set role.metadata.namespace=$org_name --set roleBinding.metadata.namespace=$org_name \
 --set smcreatehpa.metadata.namespace=$org_name --set smdeletehpa.metadata.namespace=$org_name \
 --set serviceaccount.metadata.namespace=$org_name \
+--set SETUP_METHOD="aws" \
 --set roleBinding.subjects.namespace=$org_name | kubectl create --namespace $org_name -f -
 
 #Roll back Code
