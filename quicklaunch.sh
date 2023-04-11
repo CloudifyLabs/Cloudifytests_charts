@@ -136,10 +136,17 @@ EOF"
   eksctl create cluster -f cluster.yaml
 
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+  
+  
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
-
   helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 \
   --set awsRegion=$aws_region2
+  
+  
+  
+  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+  kubectl create ns metrics-server
+  helm upgrade --install metrics-server metrics-server/metrics-server -n metrics-server
 
   kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
@@ -158,6 +165,10 @@ else
 
   helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
   --set awsRegion=$p_aws_region
+  
+  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+  kubectl create ns metrics-server
+  helm upgrade --install metrics-server metrics-server/metrics-server -n metrics-server
 
   kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
