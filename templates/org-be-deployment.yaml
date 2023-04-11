@@ -84,6 +84,8 @@ spec:
           value: {{ .Values.be.BASE_DOMAIN_NAME }}
         - name: ENABLE_CLOUDWATCH_LOGGING
           value: {{ .Values.be.ENABLE_CLOUDWATCH_LOGGING | quote }}
+        - name: SETUP_METHOD
+          value: {{ .Values.SETUP_METHOD | quote }}
         {{ if eq .Values.SETUP_METHOD "aws"}}
         - name: AWS_ACCESS_KEY_ID
           value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
