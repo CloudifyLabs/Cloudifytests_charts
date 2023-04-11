@@ -1,235 +1,320 @@
-
 {
-    "apiVersion": "v1",
-    "kind": "Pod",
-    "metadata": {
-      "generateName": "browser-",
-      "labels": {
-        "instance_id": "unknown",
-        "name": "browsers",
-        "request_id": "request_id"
-      },
-      "annotations": {
-        "janitor/ttl": "20m"
-      }
+  "apiVersion": "v1",
+  "kind": "Pod",
+  "metadata": {
+    "generateName": "browser-",
+    "labels": {
+      "instance_id": "unknown",
+      "name": "browsers",
+      "request_id": "request_id"
     },
-    "spec": {
-      "volumes": [
-        {
-          "name": "dshm",
-          "emptyDir": {
-            "medium": "Memory",
-            "sizeLimit": 0
-          }
-        }
-      ],
-      "containers": [
-        {
-          "name": "browser",
-          "image": "shgfvdj",
-          "readinessProbe": {
-            "httpGet": {
-              "path": "/status",
-              "port": 4444
-            },
-            "initialDelaySeconds": 3,
-            "periodSeconds": 3
-          },
-          "imagePullPolicy": "Always",
-          "env": [
-            {
-              "name": "TZ",
-              "value": "UTC"
-            },
-            {
-              "name": "ENABLE_VNC",
-              "value": "true"
-            },
-            {
-              "name": "SCREEN_RESOLUTION",
-              "value": "1920x1080x24"
-            },
-            {
-              "name": "TEST_NAME",
-              "value": "This.is.my.test.name"
-            },
-            {
-              "name": "ENABLE_LOGS",
-              "value": "false"
-            },
-            {
-              "name": "ENABLE_VIDEO",
-              "value": "false"
-            },
-            {
-              "name": "LOG_NAME",
-              "value": "fbvjncf"
-            },
-            {
-              "name": "VERBOSE",
-              "value": "true"
-            },
-            {
-              "name": "BASE_URL",
-              "value": "http://cloudifytests.io"
-            },
-            {
-              "name": "REQUEST_ID",
-              "value": "abc"
-            },
-            {
-              "name": "POD_TIMEOUT",
-              "value": "3600"
-            },
-            {
-              "name": "DEVICE_NAME",
-              "value": "desktop"
-            }
-          ],
-          "resources": {
-            "limits": {
-              "cpu": "700m",
-              "memory": "1500Mi"
-            },
-            "requests": {
-              "cpu": "700m",
-              "memory": "1500Mi"
-            }
-          },
-          "volumeMounts": [
-            {
-              "mountPath": "/dev/shm",
-              "name": "dshm"
-            }
-          ]
-        },
-        {
-          "name": "browser-proxy",
-          "image": "browser-proxy-image",
-          "readinessProbe": {
-            "httpGet": {
-              "path": "/check-idle-session",
-              "port": 4445
-            },
-            "initialDelaySeconds": 15,
-            "periodSeconds": 15
-          },
-          "imagePullPolicy": "Always",
-          "env": [
-            {
-              "name": "HOST",
-              "value": "0.0.0.0"
-            },
-            {
-              "name": "PORT",
-              "value": "4445"
-            },
-            {
-              "name": "PROXY_HOST",
-              "value": "127.0.0.1"
-            },
-            {
-              "name": "PROXY_PORT",
-              "value": "4444"
-            },
-            {
-              "name": "DEBUG_MODE",
-              "value": "true"
-            },
-            {
-              "name": "DATE_FORMAT",
-              "value": "%Y-%m-%d %H:%M:%S"
-            },
-            {
-              "name": "IDLE_SESSION_TIMEOUT",
-              "value": "1"
-            },
-            {
-              "name": "BASE_URL",
-              "value": "http://localhost:5000"
-            },
-            {
-              "name": "REQUEST_ID",
-              "value": "abcd"
-            },
-            {
-              "name": "LOG_LEVEL",
-              "value": "INFO"
-            },
-            {
-              "name": "RETRY_LIMIT",
-              "value": "2"
-            },
-            {
-              "name": "RETRY_PAUSE_TIME",
-              "value": "5"
-            },
-            {
-              "name": "IDLE_TIMED_OUT",
-              "value": "False"
-            }  
-          ],
-          "resources": {
-            "limits": {
-              "cpu": "100m",
-              "memory": "200Mi"
-            },
-            "requests": {
-              "cpu": "100m",
-              "memory": "200Mi"
-            }
-          }
-        },
-        {
-          "name": "recorder",
-          "image": "testimage",
-          "resources": {
-            "limits": {
-              "cpu": "600m",
-              "memory": "1024Mi"
-            },
-            "requests": {
-              "cpu": "600m",
-              "memory": "1024Mi"
-            }
-          },
-          "imagePullPolicy": "Always",
-          "env": [
-            {
-              "name": "VIDEO_SIZE",
-              "value": "1920x1080"
-            },
-            {
-              "name": "FILE_NAME",
-              "value": ""
-            },
-            {
-              "name": "FRAME_RATE",
-              "value": "6"
-            },
-            {
-              "name": "AWS_ACCESS_KEY",
-              "value": "access-key"
-            },
-            {
-              "name": "AWS_SECRET_KEY",
-              "value": "secret-key"
-            },
-            {
-              "name": "AWS_S3_REGION",
-              "value": "region-name"
-            },
-            {
-              "name": "BUCKET_NAME",
-              "value": "s3-bucket-name"
-            },
-            {
-              "name": "ORG_NAME",
-              "value": "org-name"
-            }
-          ]
-        }
-      ],
-      "restartPolicy": "Never"
+    "annotations": {
+      "janitor/ttl": "20m"
     }
+  },
+  "spec": {
+    "volumes": [
+      {
+        "name": "dshm",
+        "emptyDir": {
+          "medium": "Memory",
+          "sizeLimit": 0
+        }
+      }
+    ],
+    "containers": [
+      {
+        "name": "browser",
+        "image": "shgfvdj",
+        "lifecycle": {
+          "preStop": {
+            "exec": {
+              "command": [
+                "/bin/sh",
+                "-c",
+                "sleep 2"
+              ]
+            }
+          }
+        },
+        "readinessProbe": {
+          "httpGet": {
+            "path": "/status",
+            "port": 4444
+          },
+          "initialDelaySeconds": 5,
+          "periodSeconds": 5,
+          "timeoutSeconds": 10
+        },
+        "imagePullPolicy": "Always",
+        "env": [
+          {
+            "name": "TZ",
+            "value": "UTC"
+          },
+          {
+            "name": "ENABLE_VNC",
+            "value": "true"
+          },
+          {
+            "name": "SCREEN_RESOLUTION",
+            "value": "1920x1080x24"
+          },
+          {
+            "name": "TEST_NAME",
+            "value": "This.is.my.test.name"
+          },
+          {
+            "name": "ENABLE_LOGS",
+            "value": "false"
+          },
+          {
+            "name": "ENABLE_VIDEO",
+            "value": "false"
+          },
+          {
+            "name": "LOG_NAME",
+            "value": "fbvjncf"
+          },
+          {
+            "name": "VERBOSE",
+            "value": "true"
+          },
+          {
+            "name": "BASE_URL",
+            "value": "http://cloudifytests.io"
+          },
+          {
+            "name": "REQUEST_ID",
+            "value": "abc"
+          },
+          {
+            "name": "POD_TIMEOUT",
+            "value": "3600"
+          },
+          {
+            "name": "DEVICE_NAME",
+            "value": "desktop"
+          }
+        ],
+        "resources": {
+          "limits": {
+            "cpu": "600m",
+            "memory": "1500Mi"
+          },
+          "requests": {
+            "cpu": "600m",
+            "memory": "1500Mi"
+          }
+        },
+        "volumeMounts": [
+          {
+            "mountPath": "/dev/shm",
+            "name": "dshm"
+          }
+        ]
+      },
+      {
+        "name": "browser-proxy",
+        "image": "browser-proxy-image",
+        "lifecycle": {
+          "preStop": {
+            "exec": {
+              "command": [
+                "/bin/sh",
+                "-c",
+                "./trigger_save_logs_api.sh"
+              ]
+            }
+          }
+        },
+        "readinessProbe": {
+          "httpGet": {
+            "path": "/check-idle-session",
+            "port": 4445
+          },
+          "initialDelaySeconds": 10,
+          "periodSeconds": 10,
+          "timeoutSeconds": 20,
+          "successThreshold": 1,
+          "failureThreshold": 3
+        },
+        "imagePullPolicy": "Always",
+        "env": [
+          {
+            "name": "HOST",
+            "value": "0.0.0.0"
+          },
+          {
+            "name": "PORT",
+            "value": "4445"
+          },
+          {
+            "name": "PROXY_HOST",
+            "value": "127.0.0.1"
+          },
+          {
+            "name": "PROXY_PORT",
+            "value": "4444"
+          },
+          {
+            "name": "DEBUG_MODE",
+            "value": "true"
+          },
+          {
+            "name": "DATE_FORMAT",
+            "value": "%Y-%m-%d %H:%M:%S"
+          },
+          {
+            "name": "IDLE_SESSION_TIMEOUT",
+            "value": "1"
+          },
+          {
+            "name": "BASE_URL",
+            "value": "http://localhost:5000"
+          },
+          {
+            "name": "REQUEST_ID",
+            "value": "abcd"
+          },
+          {
+            "name": "LOG_LEVEL",
+            "value": "INFO"
+          },
+          {
+            "name": "RETRY_LIMIT",
+            "value": "2"
+          },
+          {
+            "name": "RETRY_PAUSE_TIME",
+            "value": "5"
+          },
+          {
+            "name": "IDLE_TIMED_OUT",
+            "value": "False"
+          },
+          {
+            "name": "ORG_NAME",
+            "value": "org-name"
+          },
+          {
+            "name": "SETUP_METHOD",
+            "value": "aws"
+          },
+          {
+            "name": "ACCESS_KEY",
+            "value": "access-key"
+          },
+          {
+            "name": "SECRET_ACCESS_KEY",
+            "value": "secret-key"
+          },
+          {
+            "name": "BUCKET_NAME",
+            "value": "s3-or-minio-bucket-name"
+          },
+          {
+            "name": "MINIO_ENDPOINT_URL",
+            "value": "minio-api-endpoint-url"
+          },
+          {
+            "name": "ENABLE_LOGS",
+            "value": "false"
+          },
+          {
+            "name": "LOG_NAME",
+            "value": "log_file.log"
+          }
+        ],
+        "resources": {
+          "limits": {
+            "cpu": "100m",
+            "memory": "200Mi"
+          },
+          "requests": {
+            "cpu": "100m",
+            "memory": "200Mi"
+          }
+        }
+      },
+      {
+        "name": "recorder",
+        "image": "testimage",
+        "lifecycle": {
+          "preStop": {
+            "exec": {
+              "command": [
+                "/bin/sh",
+                "-c",
+                "./trigger_save_video_api.sh"
+              ]
+            }
+          }
+        },
+        "resources": {
+          "limits": {
+            "cpu": "700m",
+            "memory": "1024Mi"
+          },
+          "requests": {
+            "cpu": "700m",
+            "memory": "1024Mi"
+          }
+        },
+        "imagePullPolicy": "Always",
+        "env": [
+          {
+            "name": "VIDEO_SIZE",
+            "value": "1920x1080"
+          },
+          {
+            "name": "FILE_NAME",
+            "value": ""
+          },
+          {
+            "name": "FRAME_RATE",
+            "value": "6"
+          },
+          {
+            "name": "ACCESS_KEY",
+            "value": "access-key"
+          },
+          {
+            "name": "SECRET_ACCESS_KEY",
+            "value": "secret-key"
+          },
+          {
+            "name": "AWS_S3_REGION",
+            "value": "region-name"
+          },
+          {
+            "name": "BUCKET_NAME",
+            "value": "s3-bucket-name"
+          },
+          {
+            "name": "ORG_NAME",
+            "value": "org-name"
+          },
+          {
+            "name": "SETUP_METHOD",
+            "value": "aws"
+          },
+          {
+            "name": "MINIO_ENDPOINT_URL",
+            "value": "minio"
+          }
+        ]
+      }
+    ],
+    "tolerations": [
+      {
+        "effect": "NoSchedule",
+        "key": "browsersession",
+        "operator": "Equal",
+        "value": "true"
+      }
+    ],
+    "restartPolicy": "Never",
+    "serviceAccountName": "cloudifytests"
   }
+}
