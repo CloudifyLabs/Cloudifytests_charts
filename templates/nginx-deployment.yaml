@@ -131,15 +131,15 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: cloudifytests-nginx 
-  minReplicas: 1
-  maxReplicas: 10
+  minReplicas: 3
+  maxReplicas: 15
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: AverageValue
-        averageValue: 100m
+        averageValue: 50m
   - type: Resource
     resource:
       name: memory

@@ -42,16 +42,6 @@ spec:
           value: {{ .Values.urls.BASE_URL }}
         - name: BACKEND_URL
           value: {{ .Values.urls.BACKEND_URL }}  
-        - name: AWS_ACCESS_KEY_ID
-          value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
-        - name: AWS_SECRET_ACCESS_KEY
-          value: {{ .Values.s3microservices.AWS_SECRET_ACCESS_KEY }}
-        - name: S3_BUCKET
-          value: {{ .Values.s3microservices.S3_BUCKET }}
-        - name: AWS_DEFAULT_REGION
-          value: {{ .Values.s3microservices.AWS_DEFAULT_REGION }}    
-        - name: AWS_ECR_IMAGE
-          value: {{ .Values.sessionmanager.AWS_ECR_IMAGE }}
         - name: DEBUG_MODE
           value: {{ .Values.smlogsvalues.DEBUG_MODE | quote }}
         - name: HOST
@@ -82,6 +72,21 @@ spec:
           value: {{ .Values.smcreateval.ORG_NGINX_SVC_NAME | quote }}
         - name: ORG_CLUSTER_SVC_NAME
           value: {{ .Values.smcreateval.ORG_CLUSTER_SVC_NAME | quote }}
+        - name: SETUP_METHOD
+          value: {{ .Values.SETUP_METHOD | quote }}
+        {{ if eq .Values.SETUP_METHOD "aws" }}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ .Values.s3microservices.AWS_SECRET_ACCESS_KEY }}
+        - name: S3_BUCKET
+          value: {{ .Values.s3microservices.S3_BUCKET }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ .Values.s3microservices.AWS_DEFAULT_REGION }}    
+        - name: AWS_ECR_IMAGE
+          value: {{ .Values.sessionmanager.AWS_ECR_IMAGE }}
+        {{ end }}
+
         volumeMounts:
           - name: browser-pod-manifest
             mountPath: /app/static_files
@@ -128,7 +133,7 @@ spec:
 
 ---
 
-    apiVersion: autoscaling/v2beta2
+apiVersion: autoscaling/v2beta2
 kind: HorizontalPodAutoscaler
 metadata:
   name: cloudifytests-sm-create 

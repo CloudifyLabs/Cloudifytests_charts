@@ -42,8 +42,8 @@ nginx:
       maxSurge: 1
   resources:
     requests:
-      cpu: "250m"
-      memory: "128Mi"
+      cpu: "500m"
+      memory: "400Mi"
   livenessProbe:
     initialDelaySeconds: 0
     periodSeconds: 10
@@ -263,9 +263,9 @@ smcreatehpa:
   metadata:
     name: cloudifytests-sm-create
     namespace: test
-  minReplicas: 1
+  minReplicas: 3
   maxReplicas: 100
-  cpuaverageValue: 200m
+  cpuaverageValue: 80m
   memoryaverageValue: 400Mi
   
 smdeletehpa:

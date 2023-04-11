@@ -42,26 +42,12 @@ spec:
           value: {{ .Values.urls.BASE_URL }}
         - name: BACKEND_URL
           value: {{ .Values.urls.BACKEND_URL }}  
-        - name: AWS_ACCESS_KEY_ID
-          value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
-        - name: AWS_SECRET_ACCESS_KEY
-          value: {{ .Values.s3microservices.AWS_SECRET_ACCESS_KEY }}
-        - name: S3_BUCKET
-          value: {{ .Values.s3microservices.S3_BUCKET }}
-        - name: AWS_DEFAULT_REGION
-          value: {{ .Values.s3microservices.AWS_DEFAULT_REGION }}    
-        - name: AWS_ECR_IMAGE
-          value: {{ .Values.sessionmanager.AWS_ECR_IMAGE }}
         - name: DEBUG_MODE
           value: {{ .Values.smlogsvalues.DEBUG_MODE | quote }}
         - name: HOST
           value: {{ .Values.smdeleteval.HOST | quote }}
         - name: PORT
           value: {{ .Values.smdeleteval.PORT | quote }}
-        - name: ORG_REDIS_HOST
-          value: {{ .Values.be.ORG_REDIS_HOST | quote }}
-        - name: ORG_REDIS_PORT
-          value: {{ .Values.be.ORG_REDIS_PORT | quote }}
         - name: ORG_NAME
           value: {{ .Values.smlogsvalues.ORG_NAME }}    
         - name: LOG_LEVEL
@@ -72,12 +58,20 @@ spec:
           value: {{ .Values.smdeleteval.LOG_GROUP_NAME }}
         - name: RETRY_LIMIT
           value: {{ .Values.smdeleteval.RETRY_LIMIT | quote }}
-        - name: POD_WAIT_TIME
-          value: {{ .Values.smdeleteval.POD_WAIT_TIME | quote }}
         - name: RETRY_PAUSE_TIME
           value: {{ .Values.smdeleteval.RETRY_PAUSE_TIME | quote }}
         - name: ENABLE_CLOUDWATCH_LOGGING
           value: {{ .Values.be.ENABLE_CLOUDWATCH_LOGGING | quote }}
+        - name: SETUP_METHOD
+          value: {{ .Values.SETUP_METHOD | quote }}
+        {{ if eq .Values.SETUP_METHOD "aws" }}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ .Values.s3microservices.AWS_SECRET_ACCESS_KEY }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ .Values.s3microservices.AWS_DEFAULT_REGION }}    
+        {{ end }}
         ports:
           - name: sm-delete
             containerPort: 5002

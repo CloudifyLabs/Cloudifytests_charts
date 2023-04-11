@@ -44,14 +44,6 @@ spec:
           value: {{ .Values.urls.BASE_AUTH_URL }}
         - name: AUTHENTICATE_USER
           value: {{ .Values.urls.AUTHENTICATE_USER }}  
-        - name: AWS_ACCESS_KEY_ID
-          value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
-        - name: AWS_SECRET_ACCESS_KEY
-          value: {{ .Values.s3microservices.AWS_SECRET_ACCESS_KEY }}
-        - name: S3_BUCKET
-          value: {{ .Values.s3microservices.S3_BUCKET }}
-        - name: AWS_DEFAULT_REGION
-          value: {{ .Values.s3microservices.AWS_DEFAULT_REGION }}    
         - name: ORG_DB_USERNAME
           value: {{ .Values.be.ORG_DB_USERNAME }}
         - name: ORG_DB_PASSWORD
@@ -92,6 +84,18 @@ spec:
           value: {{ .Values.be.BASE_DOMAIN_NAME }}
         - name: ENABLE_CLOUDWATCH_LOGGING
           value: {{ .Values.be.ENABLE_CLOUDWATCH_LOGGING | quote }}
+        - name: SETUP_METHOD
+          value: {{ .Values.SETUP_METHOD | quote }}
+        {{ if eq .Values.SETUP_METHOD "aws"}}
+        - name: AWS_ACCESS_KEY_ID
+          value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
+        - name: AWS_SECRET_ACCESS_KEY
+          value: {{ .Values.s3microservices.AWS_SECRET_ACCESS_KEY }}
+        - name: S3_BUCKET
+          value: {{ .Values.s3microservices.S3_BUCKET }}
+        - name: AWS_DEFAULT_REGION
+          value: {{ .Values.s3microservices.AWS_DEFAULT_REGION }}
+        {{ end }}
         volumeMounts:
           - name: browser-pod-manifest
             mountPath: /app/static_files/browsers-data.json
