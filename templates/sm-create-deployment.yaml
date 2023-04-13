@@ -95,7 +95,8 @@ spec:
         ports:
           - name: sm-create
             containerPort: 5001 
-      serviceAccountName: {{ .Values.cloudifytests.serviceAccountName }}    
+      serviceAccountName: {{ .Values.cloudifytests.serviceAccountName }}
+      terminationGracePeriodSeconds: 240
       affinity:
       {{- if .Values.smcreate.affinity }}
       {{ toYaml .Values.smcreate.affinity | nindent 8 }}
@@ -164,10 +165,10 @@ spec:
       policies:
         - type: Pods
           value: 1
-          periodSeconds: 3
+          periodSeconds: 10
         - type: Percent
           value: 10
-          periodSeconds: 15
+          periodSeconds: 10
       selectPolicy: Min                 
     scaleUp:
       stabilizationWindowSeconds: 0
