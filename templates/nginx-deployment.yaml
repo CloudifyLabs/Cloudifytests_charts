@@ -27,6 +27,11 @@ spec:
         {{ toYaml.Values.nginx.podLabels | nindent 8 }}
         {{- end }}
       annotations:
+        worker-processes: "200"
+        worker-connections: "100000"
+        worker-rlimit-nofile: "102400"
+        worker-cpu-affinity: "auto 111111111111111111111111"
+        keepalive: "200"
         checksum/config: {{ tpl (.Files.Get "files/cloudifytests-nginx.conf") . | sha256sum }}
         {{- if .Values.nginx.podAnnotations  }}
         {{ toYaml.Values.nginx.podAnnotations | nindent 8 }}
