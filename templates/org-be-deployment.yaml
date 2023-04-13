@@ -75,7 +75,11 @@ spec:
         - name: PORT
           value: {{ .Values.be.PORT | quote }}
         - name: LOG_FORMAT
-          value: {{ .Values.smlogsvalues.LOG_FORMAT | quote }}   
+          value: {{ .Values.smlogsvalues.LOG_FORMAT | quote }} 
+        - name: ON_PREMISE_SETUP
+          value: "true"
+        - name: TUNNEL_LIMIT
+          value: "5"
         - name: LOG_LEVEL
           value: {{ .Values.smlogsvalues.LOG_LEVEL }}
         - name: LOG_GROUP_NAME
