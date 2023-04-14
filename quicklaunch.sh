@@ -87,11 +87,7 @@ kind: ClusterConfig
 metadata:
   name: $cluster_name2
   region: $aws_region2
-addons:
-- name: aws-ebs-csi-driver
-  version: v1.5.2-eksbuild.1
-  attachPolicyARNs:
-  - arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy  
+  version: "1.22"
 nodeGroups:
   - name: marketplace-userapp
     instanceType: t3.xlarge
@@ -181,7 +177,7 @@ EOF"
   set -e
   eksctl create cluster -f cluster.yaml
 
-  #eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+ # eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
   
   
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
