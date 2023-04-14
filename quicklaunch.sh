@@ -189,8 +189,7 @@ EOF"
   
   
   
- 
-  kubectl create ns metrics-server
+
   kubectl apply -f metrics-deployment.yml
   
 
