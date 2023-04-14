@@ -89,7 +89,7 @@ metadata:
   region: $aws_region2
   
 nodeGroups:
-  - name: userapp
+  - name: prod-userapp
     instanceType: t3.xlarge
     minSize: 1
     maxSize: 4
@@ -113,7 +113,7 @@ nodeGroups:
             RotateKubeletServerCertificate: true
     
     taints:
-      userapp: "true:NoSchedule"
+      prod-userapp: "true:NoSchedule"
     labels: {role: worker}
     tags:
       nodegroup-role: worker
@@ -130,7 +130,7 @@ nodeGroups:
         albIngress: true
         xRay: true
         cloudWatch: true
-  - name: browsersession
+  - name: prod-browsersession
     instanceType: c5.large
     minSize: 1
     maxSize: 4
@@ -154,7 +154,7 @@ nodeGroups:
             RotateKubeletServerCertificate: true
     
     taints:
-      browsersession: "true:NoSchedule"
+      prod-browsersession: "true:NoSchedule"
     labels: {role: worker}
     tags:
       nodegroup-role: worker
