@@ -102,9 +102,10 @@ spec:
       {{ toYaml .Values.smcreate.affinity | nindent 8 }}
       {{- end }}
       tolerations:
-      {{- if .Values.smcreate.tolerations }}
-      {{ toYaml .Values.smcreate.tolerations | indent 8  }}
-      {{- end }}
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
       volumes:
       {{- with .Values.smcreate.volumes }}
       {{ toYaml .Values.smcreate.volumes | indent 8 }}
