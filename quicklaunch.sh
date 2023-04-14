@@ -38,9 +38,9 @@ aws configure
 
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
-read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
+#read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
 
-if [[ $flag == "yes" || $flag == "Yes" ]]; then
+#if [[ $flag == "yes" || $flag == "Yes" ]]; then
 #   echo -e "\nEnter your cluster details\n"
 
    read -p "Enter the name of the cluster (default name - marketplace): " cluster_name2
@@ -87,7 +87,11 @@ kind: ClusterConfig
 metadata:
   name: $cluster_name2
   region: $aws_region2
-  
+addons:
+- name: aws-ebs-csi-driver
+  version: v1.5.2-eksbuild.1
+  attachPolicyARNs:
+  - arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy  
 nodeGroups:
   - name: marketplace-userapp
     instanceType: t3.xlarge
@@ -118,6 +122,7 @@ nodeGroups:
     tags:
       nodegroup-role: worker
     iam:
+      
       withAddonPolicies:
         externalDNS: true
         certManager: true
@@ -176,31 +181,31 @@ EOF"
   set -e
   eksctl create cluster -f cluster.yaml
 
-  eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+  #eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
   
   
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
-  helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 \
-  --set awsRegion=$aws_region2
+  helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 --set tolerations[0].key=marketplace-browsersession --set-string tolerations[0].value=true   --set tolerations[0].operator=Equal  --set tolerations[0].effect=NoSchedule --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
   
   
   
-  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+ 
   kubectl create ns metrics-server
-  helm upgrade --install metrics-server metrics-server/metrics-server -n metrics-server
+  kubectl apply -f metrics-deployment.yml
+  
 
   kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
 
 
 
-else 
-  echo "This application will be deployed on your own Cluster."
-  echo -e "Enter your cluster details.\n"
+# else 
+#   echo "This application will be deployed on your own Cluster."
+#   echo -e "Enter your cluster details.\n"
   
-  read -p "Enter your previously created cluster name : " p_cluster_name
+#   read -p "Enter your previously created cluster name : " p_cluster_name
 
-  read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
+#   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
   aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
 #   helm repo add autoscaler https://kubernetes.github.io/autoscaler
 
@@ -213,7 +218,7 @@ else
 
 #  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
-fi
+#fi
 
 flag=true
 # # Define the name of the namespace as input by the user
