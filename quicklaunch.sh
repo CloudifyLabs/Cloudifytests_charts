@@ -58,12 +58,12 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    fi
    echo -e "\nYour AWS region will be : $aws_region2\n"
 
-   read -p "Enter the name of node group (default name - worker) : " ng_name
-   if [[ -z $ng_name ]]
-   then
-    ng_name=worker
-   fi
-   echo -e "\nYour NodeGroup Name will be : $ng_name\n"
+#    read -p "Enter the name of node group (default name - worker) : " ng_name
+#    if [[ -z $ng_name ]]
+#    then
+#     ng_name=worker
+#    fi
+#    echo -e "\nYour NodeGroup Name will be : $ng_name\n"
    
   #  read -p "Enter the min no .of nodes : " min_node
   #  if [[ -z $min_node ]]
@@ -72,13 +72,13 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
   #  fi
   #  echo -e "\nMinimum nodes will be : $min_node\n"
 
-   echo -e "\nFor running 2 sessions you need 1 node. Enter the no .of maximum nodes according to your need.\n"
-   read -p "Enter the  no .of maximum nodes (default - 4): " max_node
-   if [[ -z $max_node ]]
-   then
-    max_node=4
-   fi
-   echo -e "\nMaximum nodes will be : $max_node\n"
+#    echo -e "\nFor running 2 sessions you need 1 node. Enter the no .of maximum nodes according to your need.\n"
+#    read -p "Enter the  no .of maximum nodes (default - 4): " max_node
+#    if [[ -z $max_node ]]
+#    then
+#     max_node=4
+#    fi
+#    echo -e "\nMaximum nodes will be : $max_node\n"
 
  # Generate the cluster.yaml file with the custom name
 sudo bash -c "cat <<EOF > cluster.yaml
@@ -89,10 +89,10 @@ metadata:
   region: $aws_region2
   
 nodeGroups:
-  - name: $ng_name
+  - name: userapp
     instanceType: t3.xlarge
     minSize: 1
-    maxSize: $max_node
+    maxSize: 4
     desiredCapacity: 1
     volumeType: gp3
     volumeSize: 50
@@ -112,7 +112,8 @@ nodeGroups:
         featureGates:
             RotateKubeletServerCertificate: true
     
-    
+    taints:
+      userapp: "true:NoSchedule"
     labels: {role: worker}
     tags:
       nodegroup-role: worker
@@ -129,7 +130,47 @@ nodeGroups:
         albIngress: true
         xRay: true
         cloudWatch: true
-
+  - name: browsersession
+    instanceType: c5.large
+    minSize: 1
+    maxSize: 4
+    desiredCapacity: 1
+    volumeType: gp3
+    volumeSize: 50
+    kubeletExtraConfig:
+        kubeReserved:
+            cpu: "200m"
+            memory: "200Mi"
+            ephemeral-storage: "1Gi"
+        kubeReservedCgroup: "/kube-reserved"
+        systemReserved:
+            cpu: "200m"
+            memory: "300Mi"
+            ephemeral-storage: "1Gi"
+        evictionHard:
+            memory.available:  "100Mi"
+            nodefs.available: "10%"
+        featureGates:
+            RotateKubeletServerCertificate: true
+    
+    taints:
+      browsersession: "true:NoSchedule"
+    labels: {role: worker}
+    tags:
+      nodegroup-role: worker
+    iam:
+      withAddonPolicies:
+        externalDNS: true
+        certManager: true
+        imageBuilder: true
+        autoScaler: true
+        appMesh: true
+        appMeshPreview: true
+        ebs: true
+        efs: true
+        albIngress: true
+        xRay: true
+        cloudWatch: true
 EOF"
 
   set -e
