@@ -119,8 +119,8 @@ spec:
       {{ toYaml .Values.sessionbe.affinity | nindent 8 }}
       {{- end }}
       tolerations:
-      {{- if .Values.sessionbe.tolerations }}
-      {{ toYaml .Values.sessionbe.tolerations | indent 8  }}
+      {{- if .Values.sessionUi.tolerations }}
+      {{ toYaml .Values.sessionUi.tolerations | indent 8  }}
       {{- end }}
       volumes:
       {{- with .Values.sessionbe.volumes }}
