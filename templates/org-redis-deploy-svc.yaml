@@ -35,5 +35,9 @@ spec:
         image: redis
         ports:
         - containerPort: 6379
-      
+      tolerations:
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
 
