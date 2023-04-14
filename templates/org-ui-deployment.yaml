@@ -49,9 +49,10 @@ spec:
       {{ toYaml .Values.sessionUi.affinity | nindent 8 }}
       {{- end }}
       tolerations:
-      {{- if .Values.sessionUi.tolerations }}
-      {{ toYaml .Values.sessionUi.tolerations | indent 8  }}
-      {{- end }} 
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
       volumes:
       {{- with .Values.sessionUi.volumes }}
       {{ toYaml .Values.sessionUi.volumes | indent 8 }}
