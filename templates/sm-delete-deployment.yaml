@@ -80,6 +80,10 @@ spec:
       {{- if .Values.smdelete.affinity }}
       {{ toYaml .Values.smdelete.affinity | nindent 8 }}
       {{- end }}
+      tolerations:
+      {{- if .Values.smdelete.tolerations }}
+      {{ toYaml .Values.smdelete.tolerations | indent 8  }}
+      {{- end }}
       volumes:
       {{- with .Values.smdelete.volumes }}
       {{ toYaml .Values.smdelete.volumes | indent 8 }}
