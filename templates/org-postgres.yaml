@@ -64,4 +64,9 @@ spec:
         - name: postgres
           persistentVolumeClaim:
             claimName: postgres-claim
+      tolerations:
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
           
