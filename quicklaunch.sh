@@ -89,7 +89,7 @@ metadata:
   region: $aws_region2
   
 nodeGroups:
-  - name: prod-userapp
+  - name: marketplace-userapp
     instanceType: t3.xlarge
     minSize: 1
     maxSize: 4
@@ -113,7 +113,7 @@ nodeGroups:
             RotateKubeletServerCertificate: true
     
     taints:
-      prod-userapp: "true:NoSchedule"
+      marketplace-userapp: "true:NoSchedule"
     labels: {role: worker}
     tags:
       nodegroup-role: worker
@@ -130,7 +130,7 @@ nodeGroups:
         albIngress: true
         xRay: true
         cloudWatch: true
-  - name: prod-browsersession
+  - name: marketplace-browsersession
     instanceType: c5.large
     minSize: 1
     maxSize: 4
@@ -154,7 +154,7 @@ nodeGroups:
             RotateKubeletServerCertificate: true
     
     taints:
-      prod-browsersession: "true:NoSchedule"
+      marketplace-browsersession: "true:NoSchedule"
     labels: {role: worker}
     tags:
       nodegroup-role: worker
