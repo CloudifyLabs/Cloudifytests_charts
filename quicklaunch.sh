@@ -205,7 +205,7 @@ EOF"
 #   read -p "Enter your previously created cluster name : " p_cluster_name
 
 #   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
-  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
+#  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
 #   helm repo add autoscaler https://kubernetes.github.io/autoscaler
 
 #   helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
@@ -337,7 +337,7 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
 
 
 # Update KubeConfig
-# aws eks update-kubeconfig --name $p_cluster_name --region $aws_region
+# aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
 
  
 # Create a namespace with the name entered by the user
