@@ -80,7 +80,10 @@ spec:
 {{- if .Values.nginx.affinity }}
 {{ toYaml .Values.nginx.affinity | indent 8  }}
 {{- end }}
-    
+      tolerations:
+{{- if .Values.nginx.tolerations }}
+{{ toYaml .Values.nginx.tolerations | indent 8  }}
+{{- end }}
       volumes:
       {{- with .Values.nginx.volumes }}
       {{ toYaml .Values.nginx.volumes | indent 8 }}
