@@ -309,7 +309,7 @@
     "tolerations": [
       {
         "effect": "NoSchedule",
-        "key": "browsersession",
+        "key": "marketplace-browsersession",
         "operator": "Equal",
         "value": "true"
       }
