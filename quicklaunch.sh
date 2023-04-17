@@ -174,11 +174,11 @@ nodeGroups:
         cloudWatch: true
 EOF"
 
-  set -e
+  #set -e
 #  eksctl create cluster -f cluster.yaml
 
  # eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
-  
+  aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
   
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
   helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 --set tolerations[0].key=marketplace-browsersession --set-string tolerations[0].value=true   --set tolerations[0].operator=Equal  --set tolerations[0].effect=NoSchedule --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
@@ -333,7 +333,7 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
 
 
 # Update KubeConfig
-# aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+ aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
 
  
 # Create a namespace with the name entered by the user
