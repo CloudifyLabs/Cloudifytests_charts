@@ -171,11 +171,7 @@ spec:
         kubernetes.io/os: linux
       tolerations:
       - effect: NoSchedule
-        key: browsersession
-        operator: Equal
-        value: "true"
-      - effect: NoSchedule
-        key: userapp
+        key: marketplace-userapp
         operator: Equal
         value: "true"
       priorityClassName: system-cluster-critical
