@@ -175,7 +175,7 @@ nodeGroups:
 EOF"
 
   set -e
-  eksctl create cluster -f cluster.yaml
+#  eksctl create cluster -f cluster.yaml
 
  # eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
   
