@@ -334,6 +334,9 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
 
 # Update KubeConfig
  aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+ 
+ kubectl patch deployment coredns -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
 
  
 # Create a namespace with the name entered by the user
