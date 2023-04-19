@@ -177,11 +177,15 @@ EOF"
   #set -e
 #  eksctl create cluster -f cluster.yaml
 
+kubectl patch deployment coredns -p \
+  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+
  # eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
   aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
   
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
-  helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 --set tolerations[0].key=marketplace-browsersession --set-string tolerations[0].value=true   --set tolerations[0].operator=Equal  --set tolerations[0].effect=NoSchedule --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
+  helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
   
   
   
@@ -189,7 +193,7 @@ EOF"
   kubectl apply -f metrics-deployment.yml
   
 
-  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+  kubectl patch deploy my-release-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
 
 
