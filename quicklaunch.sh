@@ -87,11 +87,9 @@ kind: ClusterConfig
 metadata:
   name: $cluster_name2
   region: $aws_region2
-  version: "1.22"
+  version: "1.25"
   
-addons:
-- name: aws-ebs-csi-driver
-  version: v1.17.0-eksbuild.1
+
 
 nodeGroups:
   - name: marketplace-userapp
@@ -179,15 +177,19 @@ nodeGroups:
         cloudWatch: true
 EOF"
 
-  #set -e
-#  eksctl create cluster -f cluster.yaml
+  set -e
+  eksctl create cluster -f cluster.yaml
+    aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
 
-kubectl patch deployment coredns -p \
+  kubectl patch deployment coredns -p \
   '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 
- # eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
-  aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+  eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+  kubectl patch deployment ebs-csi-controller -p \
+  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+
   
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
   helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
