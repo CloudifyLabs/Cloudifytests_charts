@@ -88,6 +88,11 @@ metadata:
   name: $cluster_name2
   region: $aws_region2
   version: "1.22"
+  
+addons:
+- name: aws-ebs-csi-driver
+  version: v1.17.0-eksbuild.1
+
 nodeGroups:
   - name: marketplace-userapp
     instanceType: t3.xlarge
@@ -199,7 +204,12 @@ kubectl patch deployment coredns -p \
 
 
 # else 
-#   echo "This application will be deployed on your own Cluster."
+#   echo -e "\nThis application will be deployed on your own Cluster.\n"
+#   echo -e "\nFor this application you need two nodegroups.\n"
+#   echo -e "\nFirst nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
+#   echo -e "\nEnter your two nodegroups name.\n"
+  
+   
 #   echo -e "Enter your cluster details.\n"
   
 #   read -p "Enter your previously created cluster name : " p_cluster_name
@@ -217,7 +227,7 @@ kubectl patch deployment coredns -p \
 
 #  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
-#fi
+# fi
 
 flag=true
 # # Define the name of the namespace as input by the user
