@@ -214,7 +214,7 @@ else
   read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
   echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
   read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
-  echo -e "\nYour 1st NodeGroup name. $n_ng_2\n" 
+  echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
 
   
    
@@ -229,6 +229,11 @@ else
   helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
   --set awsRegion=$p_aws_region
   
+  eksctl create addon --name aws-ebs-csi-driver --cluster $p_cluster_name
+  kubectl patch deployment ebs-csi-controller -p \
+  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+
   
   kubectl create ns metrics-server
   kubectl apply -f metrics-deployment.yml -n metrics-server
