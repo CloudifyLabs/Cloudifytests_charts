@@ -38,10 +38,10 @@ aws configure
 
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
-#read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
+read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
 
-#if [[ $flag == "yes" || $flag == "Yes" ]]; then
-#   echo -e "\nEnter your cluster details\n"
+if [[ $flag == "yes" || $flag == "Yes" ]]; then
+   echo -e "\nEnter your cluster details\n"
 
    read -p "Enter the name of the cluster (default name - marketplace): " cluster_name2
    if [[ -z $cluster_name2 ]]
@@ -205,31 +205,43 @@ EOF"
 
 
 
-# else 
-#   echo -e "\nThis application will be deployed on your own Cluster.\n"
-#   echo -e "\nFor this application you need two nodegroups.\n"
-#   echo -e "\nFirst nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
-#   echo -e "\nEnter your two nodegroups name.\n"
+else 
+  echo -e "\nThis application will be deployed on your own Cluster.\n"
+  echo -e "\nFor this application you need two nodegroups.\n"
+  echo -e "\nFirst nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
+  
+  echo -e "\nEnter your two nodegroups name.\n"
+  read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
+  echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
+  read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
+  echo -e "\nYour 1st NodeGroup name. $n_ng_2\n" 
+
   
    
-#   echo -e "Enter your cluster details.\n"
+  echo -e "Enter your cluster details.\n"
   
-#   read -p "Enter your previously created cluster name : " p_cluster_name
+  read -p "Enter your previously created cluster name : " p_cluster_name
 
-#   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
-#  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
-#   helm repo add autoscaler https://kubernetes.github.io/autoscaler
+  read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
+ aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
+  helm repo add autoscaler https://kubernetes.github.io/autoscaler
 
-#   helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
-#   --set awsRegion=$p_aws_region
+  helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
+  --set awsRegion=$p_aws_region
   
-#   helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-#   kubectl create ns metrics-server
-#   helm upgrade --install metrics-server metrics-server/metrics-server -n metrics-server
-
-#  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
-
-# fi
+  
+  kubectl create ns metrics-server
+  kubectl apply -f metrics-deployment.yml -n metrics-server
+  
+ kubectl patch deploy my-release autoscaler/cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+ 
+ aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NoSchedule}]"
+ 
+ aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NoSchedule}]" 
+  
+  
+  
+fi
 
 flag=true
 # # Define the name of the namespace as input by the user
