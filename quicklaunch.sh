@@ -235,8 +235,8 @@ else
 
 
   
-  kubectl create ns metrics-server
-  kubectl apply -f metrics-deployment.yml -n metrics-server
+ 
+  kubectl apply -f metrics-deployment.yml 
   
  kubectl patch deploy my-release autoscaler/cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
  
