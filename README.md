@@ -6,8 +6,8 @@ This document provides the steps for installing the Cloudifytests product from A
 ## Prerequisites
 1. If you don't have any cluster then you can use our ClusterConfig file to create cluster.
 2. If you have a pre configured cluster then you need to have two nodegroups.
-        -  1st NodeGroup with 4 Vcpus.
-        -  2nd NodeGroup with 2 Vcpus.
+        *  1st NodeGroup with 4 Vcpus.
+        *  2nd NodeGroup with 2 Vcpus.
      
                 
 ### Quick Launch 
