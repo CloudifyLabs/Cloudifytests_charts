@@ -238,7 +238,7 @@ else
  
   kubectl apply -f metrics-deployment.yml 
   
- kubectl patch deploy my-release autoscaler/cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+ kubectl patch deploy my-release-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
  
 # aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
  
