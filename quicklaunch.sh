@@ -181,13 +181,11 @@ EOF"
   eksctl create cluster -f cluster.yaml
     aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
 
-  kubectl patch deployment coredns -p \
-  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+  kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
-  kubectl patch deployment ebs-csi-controller -p \
-  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+  kubectl patch deployment ebs-csi-controller -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 
   
