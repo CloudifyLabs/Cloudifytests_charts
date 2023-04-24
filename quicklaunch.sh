@@ -208,7 +208,11 @@ else
   echo -e "\nFor this application you need two nodegroups.\n"
   echo -e "\nFirst nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
   echo -e "\nPlease create your NodeGroups.\n"
+  echo -e "\nTo create NodeGroup please follow the instructions in the Readme.\n"
+  read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
+  if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
   exit 1  
+  else
   echo -e "\nEnter your two nodegroups name.\n"
   read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
   echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
@@ -242,7 +246,7 @@ else
  
   aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
   
-  
+  fi
   
 fi
 
