@@ -220,7 +220,7 @@ else
    helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$p_aws_region
  
 
-  kubectl patch deployment ebs-csi-controller -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+  #kubectl patch deployment ebs-csi-controller -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 
   
