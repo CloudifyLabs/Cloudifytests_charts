@@ -21,7 +21,7 @@ To create 2 vcpus Nodegroup.
           eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=c5.large --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --managed=false
  
  
- ##### If you have all the prerequisites then you can run or re-run the below cmd.
+ #### If you have all the prerequisites then you can run or re-run the below cmd.
      
                 
 ### Quick Launch 
