@@ -91,7 +91,7 @@ metadata:
   
 
 
-nodeGroups:
+managedNodeGroups:
   - name: marketplace-userapp
     instanceType: t3.xlarge
     minSize: 1
@@ -99,24 +99,11 @@ nodeGroups:
     desiredCapacity: 1
     volumeType: gp3
     volumeSize: 50
-    kubeletExtraConfig:
-        kubeReserved:
-            cpu: "200m"
-            memory: "200Mi"
-            ephemeral-storage: "1Gi"
-        kubeReservedCgroup: "/kube-reserved"
-        systemReserved:
-            cpu: "200m"
-            memory: "300Mi"
-            ephemeral-storage: "1Gi"
-        evictionHard:
-            memory.available:  "100Mi"
-            nodefs.available: "10%"
-        featureGates:
-            RotateKubeletServerCertificate: true
     
     taints:
-      marketplace-userapp: "true:NoSchedule"
+      - key: marketplace-userapp
+        value: "true"
+        effect: NoSchedule
     labels: {role: worker}
     tags:
       nodegroup-role: worker
@@ -141,24 +128,12 @@ nodeGroups:
     desiredCapacity: 1
     volumeType: gp3
     volumeSize: 50
-    kubeletExtraConfig:
-        kubeReserved:
-            cpu: "200m"
-            memory: "200Mi"
-            ephemeral-storage: "1Gi"
-        kubeReservedCgroup: "/kube-reserved"
-        systemReserved:
-            cpu: "200m"
-            memory: "300Mi"
-            ephemeral-storage: "1Gi"
-        evictionHard:
-            memory.available:  "100Mi"
-            nodefs.available: "10%"
-        featureGates:
-            RotateKubeletServerCertificate: true
+   
     
     taints:
-      marketplace-browsersession: "true:NoSchedule"
+      - key: marketplace-browsersession
+        value: "true"
+        effect: NoSchedule
     labels: {role: worker}
     tags:
       nodegroup-role: worker
