@@ -14,11 +14,11 @@ This document provides the steps for installing the Cloudifytests product from A
 ##### Use this commands to create your NodeGroup.
 To create 4 vcpus Nodegroup.
      
-          eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=t3.xlarge --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --managed=false
+          eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=<Use 4vcpus Machine> --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --managed=false
           
 To create 2 vcpus Nodegroup.
      
-          eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=c5.large --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --managed=false
+          eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=<Use 2vcpus Machine> --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --managed=false
  
  
  #### If you have all the prerequisites then you can run or re-run the below cmd.
