@@ -205,12 +205,13 @@ EOF"
 
 else 
   echo -e "\nThis application will be deployed on your own Cluster.\n"
-  echo -e "\nFor this application you need two nodegroups.\n"
-  echo -e "\nFirst nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
-  echo -e "\nPlease create your NodeGroups.\n"
-  echo -e "\nTo create NodeGroup please follow the instructions in the Readme.\n"
+  echo -e "- For this application you need two nodegroups.\n"
+  echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
+  echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
+  
   read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
   if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
+  echo -e "To create NodeGroup please follow the instructions in the Readme.\n"
   exit 1  
   else
   echo -e "\nEnter your two nodegroups name.\n"
