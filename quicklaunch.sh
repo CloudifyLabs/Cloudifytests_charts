@@ -207,7 +207,8 @@ else
   echo -e "\nThis application will be deployed on your own Cluster.\n"
   echo -e "\nFor this application you need two nodegroups.\n"
   echo -e "\nFirst nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
-  
+  echo -e "\nPlease create your NodeGroups.\n"
+  exit 1  
   echo -e "\nEnter your two nodegroups name.\n"
   read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
   echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
