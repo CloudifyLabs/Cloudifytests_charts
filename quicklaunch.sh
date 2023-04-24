@@ -211,7 +211,7 @@ else
   
   read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
   if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
-  echo -e "To create NodeGroup please follow the instructions in the Readme.\n"
+  echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
   exit 1  
   else
   echo -e "\nEnter your two nodegroups name.\n"
