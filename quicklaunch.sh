@@ -209,7 +209,7 @@ else
   echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
   echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
   
-  read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
+  read -p "Enter Yes to create NodeGroup\nEnter No If you have already created the nodegroup : " flag2
   if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
   echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
   exit 1  
