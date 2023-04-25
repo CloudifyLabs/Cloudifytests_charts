@@ -102,8 +102,8 @@ managedNodeGroups:
     
     taints:
     - {
-      "key": "marketplace-userapp"
-      "value": "true"
+      "key": "marketplace-userapp",
+      "value": "true",
       "effect": "NoSchedule"
       }
     labels: {role: worker}
@@ -134,7 +134,7 @@ managedNodeGroups:
     
     taints:
     - {
-      "key": "marketplace-browsersession"
+      "key": "marketplace-browsersession",
       "value": "true",
       "effect": "NoSchedule"
       }
