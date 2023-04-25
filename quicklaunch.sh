@@ -158,9 +158,9 @@ EOF"
   eksctl create cluster -f cluster.yaml
     aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
     
-    aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name marketplace-userapp  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+    aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
  
-  aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name marketplace-browsersession  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
+  aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-browsersession --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
   
 
   kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
