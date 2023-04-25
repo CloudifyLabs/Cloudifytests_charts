@@ -101,7 +101,7 @@ managedNodeGroups:
     volumeSize: 50
     
     taints:
-      - key: marketplace-userapp
+      - key: "marketplace-userapp"
         value: "true"
         effect: NoSchedule
       
@@ -132,7 +132,7 @@ managedNodeGroups:
    
     
     taints:
-      - key: marketplace-browsersession
+      - key: "marketplace-browsersession"
         value: "true"
         effect: NoSchedule
       
