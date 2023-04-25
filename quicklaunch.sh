@@ -100,10 +100,10 @@ managedNodeGroups:
     volumeType: gp3
     volumeSize: 50
     
-    taints:
-      - key: "marketplace-userapp"
-        value: "true"
-        effect: NoSchedule
+   # taints:
+   #  - key: "marketplace-userapp"
+   #     value: "true"
+   #     effect: NoSchedule
       
     labels: {role: worker}
     tags:
@@ -131,10 +131,10 @@ managedNodeGroups:
     volumeSize: 50
    
     
-    taints:
-      - key: "marketplace-browsersession"
-        value: "true"
-        effect: NoSchedule
+   # taints:
+   #   - key: "marketplace-browsersession"
+   #     value: "true"
+   #     effect: NoSchedule
       
     labels: {role: worker}
     tags:
@@ -157,6 +157,11 @@ EOF"
   set -e
   eksctl create cluster -f cluster.yaml
     aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+    
+    aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name marketplace-userapp  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+ 
+  aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name marketplace-browsersession  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
+  
 
   kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
