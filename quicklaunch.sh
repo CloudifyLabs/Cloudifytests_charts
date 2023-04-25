@@ -156,6 +156,7 @@ EOF"
 
   set -e
   eksctl create cluster -f cluster.yaml
+  eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
     aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
     
     aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
@@ -166,7 +167,7 @@ EOF"
   kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 
-  eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+  
   kubectl patch deployment ebs-csi-controller -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 
