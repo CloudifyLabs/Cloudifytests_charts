@@ -101,9 +101,11 @@ managedNodeGroups:
     volumeSize: 50
     
     taints:
-    - key: "marketplace-userapp"
-      value: "true"
-      effect: NoSchedule
+    - {
+      "key": "marketplace-userapp"
+      "value": "true"
+      "effect": "NoSchedule"
+      }
     labels: {role: worker}
     tags:
       nodegroup-role: worker
@@ -131,9 +133,11 @@ managedNodeGroups:
    
     
     taints:
-    - key: "marketplace-browsersession"
-      value: "true"
-      effect: NoSchedule
+    - {
+      "key": "marketplace-browsersession"
+      "value": "true",
+      "effect": "NoSchedule"
+      }
     labels: {role: worker}
     tags:
       nodegroup-role: worker
