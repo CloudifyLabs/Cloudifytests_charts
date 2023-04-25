@@ -87,7 +87,7 @@ kind: ClusterConfig
 metadata:
   name: $cluster_name2
   region: $aws_region2
-  version: "1.25"
+#  version: "1.25"
   
 
 
