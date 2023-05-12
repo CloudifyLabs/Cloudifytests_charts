@@ -159,6 +159,9 @@ EOF"
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
     aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
     
+    read -p "Enter your AWS Account ID : " aws_account_id
+
+    
     aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
  
   aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-browsersession --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
@@ -181,6 +184,54 @@ EOF"
 
   kubectl patch deploy my-release-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 kubectl patch deployment ebs-csi-controller -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
+ aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+ oidc_id=$(aws eks describe-cluster --name $cluster_name2 --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+ echo $oidc_id
+ eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
+ cat >load-balancer-role-trust-policy.json <<EOF
+ {
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Principal": {
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
+             },
+             "Action": "sts:AssumeRoleWithWebIdentity",
+             "Condition": {
+                 "StringEquals": {
+                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                 }
+             }
+         }
+     ]
+ }
+ EOF
+ 
+ aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
+ aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
+ 
+ cat >aws-load-balancer-controller-service-account.yaml <<EOF
+ apiVersion: v1
+ kind: ServiceAccount
+ metadata:
+   labels:
+     app.kubernetes.io/component: controller
+     app.kubernetes.io/name: aws-load-balancer-controller
+   name: aws-load-balancer-controller
+   namespace: kube-system
+   annotations:
+     eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
+ EOF
+ 
+ kubectl apply -f aws-load-balancer-controller-service-account.yaml
+ helm repo add eks https://aws.github.io/eks-charts
+ helm repo update
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$cluster_name2 --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=us-east-1
+
 
 
 
@@ -210,6 +261,10 @@ else
   read -p "Enter your previously created cluster name : " p_cluster_name
 
   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
+  
+  read -p "Enter your AWS Account ID : " aws_account_id
+  
+
  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
  
  
@@ -237,6 +292,53 @@ else
   
  kubectl patch deploy my-release-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
  
+ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
+ aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+ oidc_id=$(aws eks describe-cluster --name $p_cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+ echo $oidc_id
+ eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
+ cat >load-balancer-role-trust-policy.json <<EOF
+ {
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Principal": {
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
+             },
+             "Action": "sts:AssumeRoleWithWebIdentity",
+             "Condition": {
+                 "StringEquals": {
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                 }
+             }
+         }
+     ]
+ }
+ EOF
+ 
+ aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
+ aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
+ 
+ cat >aws-load-balancer-controller-service-account.yaml <<EOF
+ apiVersion: v1
+ kind: ServiceAccount
+ metadata:
+   labels:
+     app.kubernetes.io/component: controller
+     app.kubernetes.io/name: aws-load-balancer-controller
+   name: aws-load-balancer-controller
+   namespace: kube-system
+   annotations:
+     eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
+ EOF
+ 
+ kubectl apply -f aws-load-balancer-controller-service-account.yaml
+ helm repo add eks https://aws.github.io/eks-charts
+ helm repo update
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$p_cluster_name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=$n_ng_1 --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=us-east-1
+
 
   fi
   
