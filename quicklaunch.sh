@@ -511,7 +511,7 @@ else
 # Get the hostname of the service in the specified namespace
 hostname=""
 for i in {1..5}; do
-  hostname=$(kubectl get svc -n $org_name cloudifytests-nginx -o 'go-template={{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
+  hostname=$(kubectl get ing -n $org_name cloudifytests -o 'go-template={{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
   if [[ -n "$hostname" ]]; then
     break
   else
