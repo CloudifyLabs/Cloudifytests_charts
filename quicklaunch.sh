@@ -209,7 +209,7 @@ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-cont
          }
      ]
  }
- EOF
+ EOF"
  
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
@@ -226,7 +226,7 @@ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-cont
    namespace: kube-system
    annotations:
      eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
- EOF
+ EOF"
  
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
@@ -317,7 +317,7 @@ else
          }
      ]
  }
- EOF
+ EOF"
  
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
@@ -334,7 +334,7 @@ else
    namespace: kube-system
    annotations:
      eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
- EOF
+ EOF"
  
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
