@@ -190,7 +190,7 @@ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-cont
  oidc_id=$(aws eks describe-cluster --name $cluster_name2 --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
- cat >load-balancer-role-trust-policy.json <<EOF
+ sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
  {
      "Version": "2012-10-17",
      "Statement": [
@@ -214,7 +214,8 @@ curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-cont
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
  
- cat >aws-load-balancer-controller-service-account.yaml <<EOF
+ 
+ sudo bash -c "cat <<EOF > aws-load-balancer-controller-service-account.yaml
  apiVersion: v1
  kind: ServiceAccount
  metadata:
@@ -297,7 +298,7 @@ else
  oidc_id=$(aws eks describe-cluster --name $p_cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
- cat >load-balancer-role-trust-policy.json <<EOF
+ sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
  {
      "Version": "2012-10-17",
      "Statement": [
@@ -321,7 +322,8 @@ else
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
  
- cat >aws-load-balancer-controller-service-account.yaml <<EOF
+ 
+ sudo bash -c "cat <<EOF > aws-load-balancer-controller-service-account.yaml
  apiVersion: v1
  kind: ServiceAccount
  metadata:
