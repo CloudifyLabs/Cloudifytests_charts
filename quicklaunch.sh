@@ -190,8 +190,8 @@ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer
  oidc_id=$(aws eks describe-cluster --name $cluster_name2 --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
- sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
- {
+ sudo cat >load-balancer-role-trust-policy.json <<EOF
+{
      ""Version"": ""2012-10-17"",
      ""Statement"": [
          {
@@ -208,8 +208,8 @@ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer
              }
          }
      ]
- }
-EOF"
+}
+EOF
  
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
