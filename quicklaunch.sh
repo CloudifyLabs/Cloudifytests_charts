@@ -299,24 +299,28 @@ else
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
  sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
+ $sInvalidJson = '{
  {
-     ""Version"": ""2012-10-17"",
-     ""Statement"": [
+     "Version": "2012-10-17",
+     "Statement": [
          {
-             ""Effect"": ""Allow"",
-             ""Principal"": {
-                 ""Federated"": ""arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id""
+             "Effect": "Allow",
+             "Principal": {
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
              },
-             ""Action"": ""sts:AssumeRoleWithWebIdentity"",
-             ""Condition"": {
-                 ""StringEquals"": {
-                     ""oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud"": ""sts.amazonaws.com"",
-                     ""oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub"": ""system:serviceaccount:kube-system:aws-load-balancer-controller""
+             "Action": "sts:AssumeRoleWithWebIdentity",
+             "Condition": {
+                 "StringEquals": {
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
                  }
              }
          }
      ]
  }
+ }';
+$sValidJson = preg_replace("/(\n[\t ]*)([^\t ]+):/", "$1\"$2\":", $sInvalidJson);
+
 EOF"
  
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
