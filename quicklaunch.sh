@@ -11,7 +11,7 @@ sudo rm /home/$USER/.kube/config
 sudo git clone --branch PL-2509_v4 https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
-
+sudo chmod 777 Cloudifytests_charts
 cd Cloudifytests_charts
 
 # # Check if the operating system is Amazon Linux
