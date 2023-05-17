@@ -210,7 +210,7 @@ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer
      ]
 }
 EOF
-sudo chmod 755  load-balancer-role-trust-policy.json
+#sudo chmod 755  /home/$USER/load-balancer-role-trust-policy.json
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
  
@@ -318,9 +318,9 @@ else
      ]
 }
 EOF
- sudo chmod 755  load-balancer-role-trust-policy.json
-sudo aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
-sudo aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
+# sudo chmod 755  load-balancer-role-trust-policy.json
+ aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
+ aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
  
  
 sudo bash -c "cat <<EOF > aws-load-balancer-controller-service-account.yaml
