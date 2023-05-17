@@ -152,7 +152,7 @@ managedNodeGroups:
         albIngress: true
         xRay: true
         cloudWatch: true
-EOF"
+  EOF"
 
   set -e
   eksctl create cluster -f cluster.yaml
@@ -298,28 +298,26 @@ else
  oidc_id=$(aws eks describe-cluster --name $p_cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
- sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
- {
-     "Version": "2012-10-17",
-     "Statement": [
+ sudo cat >load-balancer-role-trust-policy.json <<EOF
+{
+     ""Version"": ""2012-10-17"",
+     ""Statement"": [
          {
-             "Effect": "Allow",
-             "Principal": {
-                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
+             ""Effect"": ""Allow"",
+             ""Principal"": {
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
              },
              "Action": "sts:AssumeRoleWithWebIdentity",
              "Condition": {
                  "StringEquals": {
-                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
-                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
                  }
              }
          }
      ]
- }
- 
-
- EOF"
+}
+EOF
  
  aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
  aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
