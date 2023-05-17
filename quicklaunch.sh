@@ -192,11 +192,11 @@ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer
  eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
  sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
  {
-     "Version": "2012-10-17",
-     "Statement": [
+     ""Version"": ""2012-10-17"",
+     ""Statement"": [
          {
-             "Effect": "Allow",
-             "Principal": {
+             ""Effect"": ""Allow"",
+             ""Principal"": {
                  "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
              },
              "Action": "sts:AssumeRoleWithWebIdentity",
@@ -300,18 +300,18 @@ else
  eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
  sudo bash -c "cat <<EOF > load-balancer-role-trust-policy.json
  {
-     "Version": "2012-10-17",
-     "Statement": [
+     ""Version"": ""2012-10-17"",
+     ""Statement"": [
          {
-             "Effect": "Allow",
-             "Principal": {
-                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
+             ""Effect"": ""Allow"",
+             ""Principal"": {
+                 ""Federated"": ""arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id""
              },
-             "Action": "sts:AssumeRoleWithWebIdentity",
-             "Condition": {
-                 "StringEquals": {
-                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
-                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+             ""Action"": ""sts:AssumeRoleWithWebIdentity"",
+             ""Condition"": {
+                 ""StringEquals"": {
+                     ""oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud"": ""sts.amazonaws.com"",
+                     ""oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub"": ""system:serviceaccount:kube-system:aws-load-balancer-controller""
                  }
              }
          }
