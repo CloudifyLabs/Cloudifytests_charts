@@ -226,7 +226,7 @@ metadata:
   namespace: kube-system
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
-  EOF"
+EOF"
  
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
@@ -334,7 +334,7 @@ metadata:
   namespace: kube-system
   annotations:
     eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
-  EOF"
+EOF"
  
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
