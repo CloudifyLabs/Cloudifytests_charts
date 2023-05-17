@@ -190,13 +190,13 @@ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer
  oidc_id=$(aws eks describe-cluster --name $cluster_name2 --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
- sudo cat >load-balancer-role-trust-policy.json <<EOF
+ cat >load-balancer-role-trust-policy.json <<EOF
 {
-     ""Version"": ""2012-10-17"",
-     ""Statement"": [
+     "Version": "2012-10-17",
+     "Statement": [
          {
-             ""Effect"": ""Allow"",
-             ""Principal"": {
+             "Effect": "Allow",
+             "Principal": {
                  "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
              },
              "Action": "sts:AssumeRoleWithWebIdentity",
@@ -298,13 +298,13 @@ else
  oidc_id=$(aws eks describe-cluster --name $p_cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
- sudo cat >load-balancer-role-trust-policy.json <<EOF
+ cat >load-balancer-role-trust-policy.json <<EOF
 {
-     ""Version"": ""2012-10-17"",
-     ""Statement"": [
+     "Version": "2012-10-17",
+     "Statement": [
          {
-             ""Effect"": ""Allow"",
-             ""Principal"": {
+             "Effect": "Allow",
+             "Principal": {
                  "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
              },
              "Action": "sts:AssumeRoleWithWebIdentity",
