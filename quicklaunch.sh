@@ -8,7 +8,7 @@ sudo rm /home/$USER/.kube/config
 
 
  # Git clone the repository
-sudo git clone --branch PL-2509_v4 https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone --branch PL-2540 https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
 sudo chmod 777 Cloudifytests_charts
