@@ -38,7 +38,7 @@ nginx:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   resources:
     requests:
@@ -84,12 +84,12 @@ sessionUi:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   resources:
     limits:
-      cpu: "300m"
-      memory: "300Mi"
+      cpu: "500m"
+      memory: "500Mi"
     requests:
       cpu: "300m"
       memory: "300Mi"   
@@ -116,12 +116,12 @@ sessionbe:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   resources:
     limits:
-      cpu: "300m"
-      memory: "300Mi"
+      cpu: "500m"
+      memory: "500Mi"
     requests:
       cpu: "300m"
       memory: "300Mi"   
@@ -150,12 +150,12 @@ smcreate:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   resources:
     limits:
-      cpu: "400m"
-      memory: "300Mi"
+      cpu: "500m"
+      memory: "500Mi"
     requests:
       cpu: "400m"
       memory: "300Mi"   
@@ -182,12 +182,12 @@ smdelete:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxUnavailable: 1
+      maxUnavailable: 0
       maxSurge: 1
   resources:
     limits:
-      cpu: "300m"
-      memory: "300Mi"
+      cpu: "500m"
+      memory: "500Mi"
     requests:
       cpu: "300m"
       memory: "300Mi"   
@@ -215,8 +215,8 @@ smcreateval:
   HOST: 0.0.0.0
   PORT: 5001
   LOG_GROUP_NAME: "cloudifytest_sm_create"
-  RETRY_LIMIT: "24"
-  MAX_IDLE_SESSION_TIMEOUT_LIMIT: "5"
+  RETRY_LIMIT: "30"
+  MAX_IDLE_SESSION_TIMEOUT_LIMIT: "120"
   RETRY_PAUSE_TIME: "10"
   POD_WAIT_TIME: "120"
   MAX_POD_TIMEOUT_LIMIT: "120"
@@ -262,6 +262,7 @@ be:
   ENABLE_CLOUDWATCH_LOGGING: "false"
   HOST: 0.0.0.0
   PORT: 5000
+  ON_PREMISE_SETUP: "true"
 
 nginxhpa:
   apiVersion: autoscaling/v2beta2
