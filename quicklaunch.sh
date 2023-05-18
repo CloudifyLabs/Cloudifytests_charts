@@ -152,7 +152,7 @@ managedNodeGroups:
         albIngress: true
         xRay: true
         cloudWatch: true
-  EOF"
+EOF"
 
   set -e
   eksctl create cluster -f cluster.yaml
