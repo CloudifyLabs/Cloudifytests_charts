@@ -74,6 +74,8 @@ spec:
           value: {{ .Values.smcreateval.ORG_CLUSTER_SVC_NAME | quote }}
         - name: SETUP_METHOD
           value: {{ .Values.SETUP_METHOD | quote }}
+        - name: ENV
+          value: stg
         {{ if eq .Values.SETUP_METHOD "aws" }}
         - name: AWS_ACCESS_KEY_ID
           value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
