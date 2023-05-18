@@ -249,8 +249,8 @@
       "userAgent": "Mozilla/5.0 (Linux; U; en-us; KFAPWI Build/JDQ39) AppleWebKit/535.19 (KHTML, like Gecko) Silk/3.13 Safari/535.19 Silk-Accelerated=true"
     },
     "Laptop with touch": {
-      "width": 950,
-      "height": 1280,
+      "width": 1280,
+      "height": 950,
       "pixelRatio": 1,
       "userAgent": ""
     },
