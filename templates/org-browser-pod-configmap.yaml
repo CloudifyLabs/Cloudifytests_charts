@@ -8,6 +8,6 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 data:
-{{ tpl (.Files.Glob "files/browser-pod-manifest.json").AsConfig . | indent 2 }}
+{{ tpl (.Files.Glob "files/stg-browser-pod-manifest.json").AsConfig . | indent 2 }}
 {{ tpl (.Files.Glob "files/browsers-data.json").AsConfig . | indent 2 }}
 {{ tpl (.Files.Glob "files/devices.json").AsConfig . | indent 2 }}
