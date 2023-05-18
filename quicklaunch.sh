@@ -54,7 +54,7 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    read -p "Enter your AWS region where you want to create your cluster (default AWS region - us-east-1): " aws_region2
    if [[ -z $aws_region2 ]]
    then
-    aws_region2=ap-south-1
+    aws_region2=us-east-1
    fi
    echo -e "\nYour AWS region will be : $aws_region2\n"
 
