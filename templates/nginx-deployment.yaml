@@ -112,7 +112,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - name: nginx
     port: 80
