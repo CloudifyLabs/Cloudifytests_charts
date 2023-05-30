@@ -288,7 +288,7 @@ smcreatehpa:
   metadata:
     name: cloudifytests-sm-create
     namespace: test
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 100
   cpuaverageValue: 80m
   memoryaverageValue: 400Mi
