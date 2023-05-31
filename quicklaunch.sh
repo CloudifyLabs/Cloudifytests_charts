@@ -305,7 +305,7 @@ else
          {
              "Effect": "Allow",
              "Principal": {
-                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
              },
              "Action": "sts:AssumeRoleWithWebIdentity",
              "Condition": {
