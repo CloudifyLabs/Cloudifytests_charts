@@ -310,8 +310,8 @@ else
              "Action": "sts:AssumeRoleWithWebIdentity",
              "Condition": {
                  "StringEquals": {
-                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
-                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
                  }
              }
          }
