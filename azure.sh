@@ -27,6 +27,8 @@ if ! command -v helm &> /dev/null; then
   curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
 fi
 
+curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
 # Install eksctl
 if ! command -v eksctl &> /dev/null; then
 curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
