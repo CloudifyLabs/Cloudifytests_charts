@@ -69,6 +69,20 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
 
 
 fi
+
+#Gcloud Login
+
+echo -e "\nCopy the URL and paste it inside a browser and then copy the verification code and paste it.\n"
+
+gcloud auth login --no-launch-browser
+
+#gcloud CLI Confgiuration.
+
+gcloud config set project $PROJECT_ID
+
+gcloud services enable container.googleapis.com
+
+
 read -p "Enter your-project-id : " PROJECT_ID
 
 gcloud config set project $PROJECT_ID
