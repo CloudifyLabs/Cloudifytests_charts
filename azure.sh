@@ -52,12 +52,12 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    read -p "Enter your AZURE Cloud Region where you want to create your cluster (default AWS region - EAST US): " aws_region
    if [[ -z $aws_region ]]
    then
-    aws_region2=EAST US
+    aws_region=EAST US
    fi
    echo -e "\nYour AZURE region will be : $aws_region\n"
 
    read -p "Enter your Resource group Name: " resource_group
-   echo -e "\nYour AZURE region will be : $aws_region\n"
+   echo -e "\nYour AZURE resource group will be : $resource_group\n"
 
    read -p "Enter your azure cloud 1st node-pool name (default node-pool name - marketplace-userapp ): " NODE_POOL_1
    if [[ -z $NODE_POOL_1 ]]
@@ -69,7 +69,7 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    read -p "Enter your  2nd node-pool name (default node-pool name - marketplace-browsersession ): " NODE_POOL_2
    if [[ -z $NODE_POOL_2 ]]
    then
-    NODE_POOL_2=marketplacebrowsersession
+    NODE_POOL_2=marketplace-browsersession
    fi
    echo -e "\nYour 2nd node-pool name will be : $NODE_POOL_2\n"
 
@@ -82,6 +82,8 @@ fi
    az aks nodepool add --resource-group $resource_group --cluster-name $cluster_name --name  $NODE_POOL_2 --node-vm-size Standard_D4s_v3 --node-count 1 --node-taints $NODE_POOL_2=true:NoSchedule \
 
    az aks get-credentials --resource-group $resource_group --name $cluster_name
+   kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+   kubectl apply -f metrics-deployment.yml
   #  read -p "Enter the min no .of nodes : " min_node
   #  if [[ -z $min_node ]]
   #  then
