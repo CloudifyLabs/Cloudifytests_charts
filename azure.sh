@@ -79,7 +79,7 @@ fi
    az aks create --resource-group $resource_group --name $cluster_name --generate-ssh-keys
 
    az aks nodepool add --resource-group $resource_group --cluster-name $cluster_name --name  $NODE_POOL_1 --node-vm-size Standard_D4s_v3 --node-count 1 --node-taints $NODE_POOL_1=true:NoSchedule \
-   az aks nodepool add --resource-group $resource_group --cluster-name $cluster_name --name  $NODE_POOL_2 --node-vm-size Standard_D4s_v3 --node-count 1 --node-taints $NODE_POOL_2=true:NoSchedule \
+   #az aks nodepool add --resource-group $resource_group --cluster-name $cluster_name --name  $NODE_POOL_2 --node-vm-size Standard_D4s_v3 --node-count 1 --node-taints $NODE_POOL_2=true:NoSchedule \
 
    az aks get-credentials --resource-group $resource_group --name $cluster_name
    kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
