@@ -231,7 +231,7 @@ EOF"
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
  helm repo update
- helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$cluster_name2 --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=us-east-1
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$cluster_name2 --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
 
 
 
@@ -339,7 +339,7 @@ EOF"
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
  helm repo update
- helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$p_cluster_name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=$n_ng_1 --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=us-east-1
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$p_cluster_name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=$n_ng_1 --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$p_cluster_name
 
 
   fi
