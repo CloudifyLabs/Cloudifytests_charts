@@ -186,7 +186,7 @@ EOF"
 kubectl patch deployment ebs-csi-controller -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
 sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
- aws iam create-policy --policy-name AWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+ aws iam create-policy --policy-name MarketplaceAWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
  oidc_id=$(aws eks describe-cluster --name $cluster_name2 --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
  eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
@@ -211,8 +211,8 @@ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer
 }
 EOF
 #sudo chmod 755  /home/$USER/load-balancer-role-trust-policy.json
- aws iam create-role --role-name AmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
- aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/AWSLoadBalancerControllerIAMPolicy --role-name AmazonEKSLoadBalancerControllerRole
+ aws iam create-role --role-name MarketplaceAmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
+ aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/MarketplaceAWSLoadBalancerControllerIAMPolicy --role-name MarketplaceAmazonEKSLoadBalancerControllerRole
  
  
 sudo bash -c "cat <<EOF > aws-load-balancer-controller-service-account.yaml
@@ -225,7 +225,7 @@ metadata:
   name: aws-load-balancer-controller
   namespace: kube-system
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/AmazonEKSLoadBalancerControllerRole
+    eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/MarketplaceAmazonEKSLoadBalancerControllerRole
 EOF"
  
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
