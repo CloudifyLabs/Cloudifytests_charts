@@ -536,3 +536,6 @@ echo -e "\nSomething went wrong Wait for sometime for the  namespace to be delet
 kubectl delete ns $org_name
 echo -e "\nNamespace $org_name deleted\nTry to run the command again\n"
 fi
+LB_ARN=$(aws elbv2 describe-load-balancers --query "LoadBalancers[?DNSName == '$hostname'].LoadBalancerArn | [0]")
+LB_ARN_final=$(echo "$LB_ARN" | tr -d '"')
+aws elbv2 modify-load-balancer-attributes --load-balancer-arn $LB_ARN_final --attributes Key=idle_timeout.timeout_seconds,Value=1200
