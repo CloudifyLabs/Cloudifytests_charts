@@ -23,9 +23,9 @@ spec:
       containers:
       - env:
         - name: SM_CREATE_API_URL
-          value: "http://cloudifytests-sm-create.default.svc.cluster.local:5001/api/v1/session"
+          value: "http://cloudifytests-sm-create.{{ .Values.smlogsvalues.ORG_NAME }}.svc.cluster.local:5001/api/v1/session"
         - name: SM_DELETE_API_URL
-          value: "http://cloudifytests-sm-delete.default.svc.cluster.local:5002/api/v1/session/"
+          value: "http://cloudifytests-sm-delete.{{ .Values.smlogsvalues.ORG_NAME }}.svc.cluster.local:5002/api/v1/session/"
         - name: BROWSER_SESSION_PORT
           value: "4444"
         image: 975876589297.dkr.ecr.us-east-1.amazonaws.com/playwright_proxy_app:v1.0
