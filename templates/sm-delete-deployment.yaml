@@ -80,6 +80,11 @@ spec:
       {{- if .Values.smdelete.affinity }}
       {{ toYaml .Values.smdelete.affinity | nindent 8 }}
       {{- end }}
+      tolerations:
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
       volumes:
       {{- with .Values.smdelete.volumes }}
       {{ toYaml .Values.smdelete.volumes | indent 8 }}

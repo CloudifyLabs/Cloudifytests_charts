@@ -74,6 +74,8 @@ spec:
           value: {{ .Values.smcreateval.ORG_CLUSTER_SVC_NAME | quote }}
         - name: SETUP_METHOD
           value: {{ .Values.SETUP_METHOD | quote }}
+        - name: ENV
+          value: stg
         {{ if eq .Values.SETUP_METHOD "aws" }}
         - name: AWS_ACCESS_KEY_ID
           value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
@@ -95,12 +97,17 @@ spec:
         ports:
           - name: sm-create
             containerPort: 5001 
-      serviceAccountName: {{ .Values.cloudifytests.serviceAccountName }}    
+      serviceAccountName: {{ .Values.cloudifytests.serviceAccountName }}
+      terminationGracePeriodSeconds: 240
       affinity:
       {{- if .Values.smcreate.affinity }}
       {{ toYaml .Values.smcreate.affinity | nindent 8 }}
       {{- end }}
-      
+      tolerations:
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
       volumes:
       {{- with .Values.smcreate.volumes }}
       {{ toYaml .Values.smcreate.volumes | indent 8 }}
@@ -164,10 +171,10 @@ spec:
       policies:
         - type: Pods
           value: 1
-          periodSeconds: 3
+          periodSeconds: 10
         - type: Percent
           value: 10
-          periodSeconds: 15
+          periodSeconds: 10
       selectPolicy: Min                 
     scaleUp:
       stabilizationWindowSeconds: 0

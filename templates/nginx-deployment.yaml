@@ -27,6 +27,11 @@ spec:
         {{ toYaml.Values.nginx.podLabels | nindent 8 }}
         {{- end }}
       annotations:
+        worker-processes: "200"
+        worker-connections: "100000"
+        worker-rlimit-nofile: "102400"
+        worker-cpu-affinity: "auto 111111111111111111111111"
+        keepalive: "200"
         checksum/config: {{ tpl (.Files.Get "files/cloudifytests-nginx.conf") . | sha256sum }}
         {{- if .Values.nginx.podAnnotations  }}
         {{ toYaml.Values.nginx.podAnnotations | nindent 8 }}
@@ -75,7 +80,10 @@ spec:
 {{- if .Values.nginx.affinity }}
 {{ toYaml .Values.nginx.affinity | indent 8  }}
 {{- end }}
-    
+      tolerations:
+{{- if .Values.nginx.tolerations }}
+{{ toYaml .Values.nginx.tolerations | indent 8  }}
+{{- end }}
       volumes:
       {{- with .Values.nginx.volumes }}
       {{ toYaml .Values.nginx.volumes | indent 8 }}
@@ -104,7 +112,7 @@ metadata:
     release: "{{ .Release.Name }}"
     heritage: "{{ .Release.Service }}"
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
   - name: nginx
     port: 80
@@ -131,7 +139,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: cloudifytests-nginx 
-  minReplicas: 3
+  minReplicas: 1
   maxReplicas: 15
   metrics:
   - type: Resource

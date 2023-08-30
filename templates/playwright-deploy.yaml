@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  
+  name: playwright
+ # namespace: default
+ 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: playwright
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+       labels:
+         app: playwright
+    spec:
+      containers:
+      - env:
+        - name: SM_CREATE_API_URL
+          value: "http://cloudifytests-sm-create.{{ .Values.smlogsvalues.ORG_NAME }}.svc.cluster.local:5001/api/v1/session"
+        - name: SM_DELETE_API_URL
+          value: "http://cloudifytests-sm-delete.{{ .Values.smlogsvalues.ORG_NAME }}.svc.cluster.local:5002/api/v1/session/"
+        - name: BROWSER_SESSION_PORT
+          value: "4444"
+        image: 975876589297.dkr.ecr.us-east-1.amazonaws.com/playwright_proxy_app:v1.1_capabilities
+        imagePullPolicy: Always
+        name: playwright
+        ports:
+        - containerPort: 5010
+          name: playwright
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 5010
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 20
+        resources:
+          limits:
+            cpu: 500m
+            memory: 600Mi
+          requests:
+            cpu: 400m
+            memory: 600Mi
+  
+      tolerations:
+      - effect: NoSchedule
+        key: marketplace-userapp
+        operator: Equal
+        value: "true"
+   

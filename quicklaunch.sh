@@ -8,10 +8,10 @@ sudo rm /home/$USER/.kube/config
 
 
  # Git clone the repository
-sudo git clone https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone --branch PL-2540_v1 https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
-
+sudo chmod 777 Cloudifytests_charts
 cd Cloudifytests_charts
 
 # # Check if the operating system is Amazon Linux
@@ -41,7 +41,7 @@ echo -e "\nKindly check all the details in cluster.yaml If you want to create th
 read -p "Enter Yes to create cluster using the cluster.yaml or Enter No to skip this step : " flag
 
 if [[ $flag == "yes" || $flag == "Yes" ]]; then
-#   echo -e "\nEnter your cluster details\n"
+   echo -e "\nEnter your cluster details\n"
 
    read -p "Enter the name of the cluster (default name - marketplace): " cluster_name2
    if [[ -z $cluster_name2 ]]
@@ -58,12 +58,12 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    fi
    echo -e "\nYour AWS region will be : $aws_region2\n"
 
-   read -p "Enter the name of node group (default name - worker) : " ng_name
-   if [[ -z $ng_name ]]
-   then
-    ng_name=worker
-   fi
-   echo -e "\nYour NodeGroup Name will be : $ng_name\n"
+#    read -p "Enter the name of node group (default name - worker) : " ng_name
+#    if [[ -z $ng_name ]]
+#    then
+#     ng_name=worker
+#    fi
+#    echo -e "\nYour NodeGroup Name will be : $ng_name\n"
    
   #  read -p "Enter the min no .of nodes : " min_node
   #  if [[ -z $min_node ]]
@@ -72,13 +72,13 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
   #  fi
   #  echo -e "\nMinimum nodes will be : $min_node\n"
 
-   echo -e "\nFor running 2 sessions you need 1 node. Enter the no .of maximum nodes according to your need.\n"
-   read -p "Enter the  no .of maximum nodes (default - 4): " max_node
-   if [[ -z $max_node ]]
-   then
-    max_node=4
-   fi
-   echo -e "\nMaximum nodes will be : $max_node\n"
+#    echo -e "\nFor running 2 sessions you need 1 node. Enter the no .of maximum nodes according to your need.\n"
+#    read -p "Enter the  no .of maximum nodes (default - 4): " max_node
+#    if [[ -z $max_node ]]
+#    then
+#     max_node=4
+#    fi
+#    echo -e "\nMaximum nodes will be : $max_node\n"
 
  # Generate the cluster.yaml file with the custom name
 sudo bash -c "cat <<EOF > cluster.yaml
@@ -87,32 +87,55 @@ kind: ClusterConfig
 metadata:
   name: $cluster_name2
   region: $aws_region2
+#  version: "1.25"
   
-nodeGroups:
-  - name: $ng_name
+
+
+managedNodeGroups:
+  - name: marketplace-userapp
     instanceType: t3.xlarge
     minSize: 1
-    maxSize: $max_node
+    maxSize: 4
     desiredCapacity: 1
     volumeType: gp3
     volumeSize: 50
-    kubeletExtraConfig:
-        kubeReserved:
-            cpu: "200m"
-            memory: "200Mi"
-            ephemeral-storage: "1Gi"
-        kubeReservedCgroup: "/kube-reserved"
-        systemReserved:
-            cpu: "200m"
-            memory: "300Mi"
-            ephemeral-storage: "1Gi"
-        evictionHard:
-            memory.available:  "100Mi"
-            nodefs.available: "10%"
-        featureGates:
-            RotateKubeletServerCertificate: true
     
+   # taints:
+   #  - key: "marketplace-userapp"
+   #     value: "true"
+   #     effect: NoSchedule
+      
+    labels: {role: worker}
+    tags:
+      nodegroup-role: worker
+    iam:
+      
+      withAddonPolicies:
+        externalDNS: true
+        certManager: true
+        imageBuilder: true
+        autoScaler: true
+        appMesh: true
+        appMeshPreview: true
+        ebs: true
+        efs: true
+        albIngress: true
+        xRay: true
+        cloudWatch: true
+  - name: marketplace-browsersession
+    instanceType: c5.large
+    minSize: 1
+    maxSize: 4
+    desiredCapacity: 1
+    volumeType: gp3
+    volumeSize: 50
+   
     
+   # taints:
+   #   - key: "marketplace-browsersession"
+   #     value: "true"
+   #     effect: NoSchedule
+      
     labels: {role: worker}
     tags:
       nodegroup-role: worker
@@ -129,49 +152,198 @@ nodeGroups:
         albIngress: true
         xRay: true
         cloudWatch: true
-
 EOF"
 
   set -e
   eksctl create cluster -f cluster.yaml
-
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
+    aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+    
+    read -p "Enter your AWS Account ID : " aws_account_id
+
+    
+    aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+ 
+  aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-browsersession --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
+  
+
+  kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+
+  
   
   
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
-  helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2 \
-  --set awsRegion=$aws_region2
+  helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$cluster_name2  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
   
   
   
-  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-  kubectl create ns metrics-server
-  helm upgrade --install metrics-server metrics-server/metrics-server -n metrics-server
 
-  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+  kubectl apply -f metrics-deployment.yml
+  
+
+  kubectl patch deploy my-release-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${cluster_name2}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+kubectl patch deployment ebs-csi-controller -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
+ aws iam create-policy --policy-name MarketplaceAWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+ oidc_id=$(aws eks describe-cluster --name $cluster_name2 --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+ echo $oidc_id
+ eksctl utils associate-iam-oidc-provider --region=$aws_region2 --cluster=$cluster_name2 --approve
+ cat >load-balancer-role-trust-policy.json <<EOF
+{
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Principal": {
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id"
+             },
+             "Action": "sts:AssumeRoleWithWebIdentity",
+             "Condition": {
+                 "StringEquals": {
+                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$aws_region2.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                 }
+             }
+         }
+     ]
+}
+EOF
+#sudo chmod 755  /home/$USER/load-balancer-role-trust-policy.json
+ aws iam create-role --role-name MarketplaceAmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
+ aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/MarketplaceAWSLoadBalancerControllerIAMPolicy --role-name MarketplaceAmazonEKSLoadBalancerControllerRole
+ 
+ 
+sudo bash -c "cat <<EOF > aws-load-balancer-controller-service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: aws-load-balancer-controller
+  name: aws-load-balancer-controller
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/MarketplaceAmazonEKSLoadBalancerControllerRole
+EOF"
+ 
+ kubectl apply -f aws-load-balancer-controller-service-account.yaml
+ helm repo add eks https://aws.github.io/eks-charts
+ helm repo update
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$cluster_name2 --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$aws_region2
+
+
 
 
 
 
 else 
-  echo "This application will be deployed on your own Cluster."
+  echo -e "\nThis application will be deployed on your own Cluster.\n"
+  echo -e "- For this application you need two nodegroups.\n"
+  echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
+  echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
+  
+  read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
+  if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
+  echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
+  exit 1  
+  else
+  echo -e "\nEnter your two nodegroups name.\n"
+  read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
+  echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
+  read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
+  echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
+
+  
+   
   echo -e "Enter your cluster details.\n"
   
   read -p "Enter your previously created cluster name : " p_cluster_name
 
   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
-  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
+  
+  read -p "Enter your AWS Account ID : " aws_account_id
+  
+
+ aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
+ 
+ 
+  eksctl create addon --name aws-ebs-csi-driver --cluster $p_cluster_name
+   aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+ 
+  aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
+  
+  
+  kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+  #kubectl patch deployment ebs-csi-controller -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"userapp","value":"true"}]}}}}' -n kube-system
+
+
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
 
-  helm install auto-scaler autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name \
-  --set awsRegion=$p_aws_region
+   helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$p_aws_region
+ 
+
+  kubectl patch deployment ebs-csi-controller -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
+
   
-  helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
-  kubectl create ns metrics-server
-  helm upgrade --install metrics-server metrics-server/metrics-server -n metrics-server
+ 
+  kubectl apply -f metrics-deployment.yml 
+  
+ kubectl patch deploy my-release-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
+ 
+ sudo curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/v2.4.7/docs/install/iam_policy.json
+ aws iam create-policy --policy-name MarketplaceAWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
+ oidc_id=$(aws eks describe-cluster --name $p_cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
+ echo $oidc_id
+ eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
+ cat >load-balancer-role-trust-policy.json <<EOF
+{
+     "Version": "2012-10-17",
+     "Statement": [
+         {
+             "Effect": "Allow",
+             "Principal": {
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
+             },
+             "Action": "sts:AssumeRoleWithWebIdentity",
+             "Condition": {
+                 "StringEquals": {
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                 }
+             }
+         }
+     ]
+}
+EOF
+# sudo chmod 755  load-balancer-role-trust-policy.json
+ aws iam create-role --role-name MarketplaceAmazonEKSLoadBalancerControllerRole --assume-role-policy-document file://"load-balancer-role-trust-policy.json"
+ aws iam attach-role-policy --policy-arn arn:aws:iam::$aws_account_id:policy/MarketplaceAWSLoadBalancerControllerIAMPolicy --role-name MarketplaceAmazonEKSLoadBalancerControllerRole
+ 
+ 
+sudo bash -c "cat <<EOF > aws-load-balancer-controller-service-account.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/name: aws-load-balancer-controller
+  name: aws-load-balancer-controller
+  namespace: kube-system
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::$aws_account_id:role/MarketplaceAmazonEKSLoadBalancerControllerRole
+EOF"
+ 
+ kubectl apply -f aws-load-balancer-controller-service-account.yaml
+ helm repo add eks https://aws.github.io/eks-charts
+ helm repo update
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$p_cluster_name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=$n_ng_1 --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$p_cluster_name
 
-  kubectl patch deploy auto-scaler-aws-cluster-autoscaler --patch '{"spec": {"template": {"spec": {"containers": [{"name": "aws-cluster-autoscaler", "command": ["./cluster-autoscaler","--cloud-provider=aws","--namespace=default","--node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/'${p_cluster_name}'","--scale-down-unneeded-time=1m","--logtostderr=true","--stderrthreshold=info","--v=4"]}]}}}}' 
 
+  fi
+  
 fi
 
 flag=true
@@ -292,7 +464,10 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
 
 
 # Update KubeConfig
-# aws eks update-kubeconfig --name $p_cluster_name --region $aws_region
+# aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+ 
+ kubectl patch deployment coredns -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
+
 
  
 # Create a namespace with the name entered by the user
@@ -338,7 +513,7 @@ else
 # Get the hostname of the service in the specified namespace
 hostname=""
 for i in {1..5}; do
-  hostname=$(kubectl get svc -n $org_name cloudifytests-nginx -o 'go-template={{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
+  hostname=$(kubectl get ing -n $org_name cloudifytests -o 'go-template={{range .status.loadBalancer.ingress}}{{.hostname}}{{end}}')
   if [[ -n "$hostname" ]]; then
     break
   else
@@ -361,3 +536,6 @@ echo -e "\nSomething went wrong Wait for sometime for the  namespace to be delet
 kubectl delete ns $org_name
 echo -e "\nNamespace $org_name deleted\nTry to run the command again\n"
 fi
+LB_ARN=$(aws elbv2 describe-load-balancers --query "LoadBalancers[?DNSName == '$hostname'].LoadBalancerArn | [0]")
+LB_ARN_final=$(echo "$LB_ARN" | tr -d '"')
+aws elbv2 modify-load-balancer-attributes --load-balancer-arn $LB_ARN_final --attributes Key=idle_timeout.timeout_seconds,Value=1200
