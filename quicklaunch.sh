@@ -36,7 +36,8 @@ fi
 aws configure
 
 default_region=$(aws configure get region)
-
+default_access_key=$(aws configure get aws_access_key_id)
+default_secret_key=$(aws configure get aws_secret_access_key)
 
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
@@ -53,7 +54,7 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    echo -e "\nYour Cluster Name will be : $cluster_name2\n"
 
 
-   read -p "Enter your AWS region where you want to create your cluster (default AWS region - us-east-1): " aws_region2
+   read -p "Enter your default AWS region where you want to create your cluster (default AWS region - us-east-): " aws_region2
    if [[ -z $aws_region2 ]]
    then
     aws_region2=us-east-1
@@ -428,16 +429,35 @@ do
 # Define the AWS access key and secret key as input by the user
 
 read -p "Enter your AWS access key: " aws_key
+if [[ -z $aws_key ]]
+   then
+    aws_key=$default_access_key
+  fi
 echo -e "\nYour AWS access key is : $aws_key\n"
+
+
 read -p "Enter your AWS secret key: " aws_secret_key
+if [[ -z $aws_secret_key ]]
+   then
+    aws_secret_key=$default_secret_key
+  fi
 echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
 
 # Define the base URL and ingress host as input by the user
-
-
 # Define the AWS S3 bucket name and default region as input by the user
-read -p "Enter your AWS default region: " aws_region
-echo -e "\nYour AWS default region is : $aws_region\n"
+#read -p "Enter your AWS default region: " aws_region
+#echo -e "\nYour AWS default region is : $aws_region\n"
+
+
+read -p "Enter your default AWS region name : " aws_region
+  if [[ -z $aws_region ]]
+   then
+    aws_region=$default_region
+  fi
+  echo -e "\nYour default AWS region name. : $aws_region\n"
+
+
+
 echo -e "\nConditions for Bucket name.\n- Capital letters are not allowed. \n- Should start and end with digits or alphabet. \n- Spaces are not allowed. \n- Allowed alphabets , digits and - \n- Minimum 3 and Maximum 63 characters.\nDon't use test keyword in the bucket name.\nPlease do not use test keyword in your bucket name.\n"
 
 read -p "Enter the Bucket name: " s3_bucket
