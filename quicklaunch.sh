@@ -162,7 +162,17 @@ EOF"
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
   aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
     
-  read -p "Enter your AWS Account ID : " aws_account_id
+#  read -p "Enter your AWS Account ID : " aws_account_id
+while true; do
+  echo -n "Your AWS Account ID: "
+  read aws_account_id
+  if [[ "$aws_account_id"  != "" ]]
+    then
+     echo -e "\nYour AWS ID is : $aws_account_id\n"
+    break
+  fi
+done
+
   
 
     
@@ -276,14 +286,25 @@ else
    then
     p_cluster_name=marketplace
    fi
+   echo -e "\nYour Cluster name. $p_cluster_name\n" 
 
   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
   if [[ -z $p_aws_region ]]
    then
     p_aws_region=us-east-1
   fi
+  echo -e "\nYour Cluster name. $p_aws_region\n"
   
-  read -p "Enter your AWS Account ID : " aws_account_id
+ # read -p "Enter your AWS Account ID : " aws_account_id
+ while true; do
+  echo -n "Your AWS Account ID: "
+  read aws_account_id
+  if [[ "$aws_account_id"  != "" ]]
+    then
+     echo -e "\nYour AWS ID is : $aws_account_id\n"
+    break
+  fi
+done
   
 
  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
