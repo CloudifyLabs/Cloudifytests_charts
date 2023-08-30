@@ -305,6 +305,19 @@ else
     break
   fi
 done
+
+eksctl get nodegroup --cluster=$p_cluster_name --region=$p_aws_region  1>/dev/null  2>/dev/null
+eks_cluster=$(echo $?)
+
+if [[ "$eks_cluster" -ne 0 ]]
+  then
+  echo -e "\nNO Cluster Found\n"
+  exit 0
+else
+  echo -e "\nCluster Found\n"
+  
+fi
+
   
 
  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
