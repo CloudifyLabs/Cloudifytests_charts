@@ -35,6 +35,8 @@ fi
 
 aws configure
 
+default_region=$(aws configure get region)
+
 
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
@@ -286,14 +288,14 @@ else
    then
     p_cluster_name=marketplace
    fi
-   echo -e "\nYour Cluster name. $p_cluster_name\n" 
+   echo -e "\nYour Cluster name. : $p_cluster_name\n" 
 
-  read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
+  read -p "Enter your default AWS region name : " p_aws_region
   if [[ -z $p_aws_region ]]
    then
-    p_aws_region=us-east-1
+    p_aws_region=$default_region
   fi
-  echo -e "\nYour Cluster name. $p_aws_region\n"
+  echo -e "\nYour default AWS region name. : $p_aws_region\n"
   
  # read -p "Enter your AWS Account ID : " aws_account_id
  while true; do
