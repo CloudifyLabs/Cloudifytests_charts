@@ -224,6 +224,10 @@
           {
             "name": "LOG_NAME",
             "value": "log_file.log"
+          },
+          {
+            "name": "POD_TIMEOUT",
+            "value": "3600"
           }
         ],
         "resources": {
