@@ -436,7 +436,7 @@ if [[ -z $aws_key ]]
 echo -e "\nYour AWS access key is : $aws_key\n"
 
 
-read -p "Enter your AWS secret key: " aws_secret_key
+read -p "Enter your AWS secret access key: " aws_secret_key
 if [[ -z $aws_secret_key ]]
    then
     aws_secret_key=$default_secret_key
