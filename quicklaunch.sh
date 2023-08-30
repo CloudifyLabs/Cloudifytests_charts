@@ -57,6 +57,9 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
     aws_region2=us-east-1
    fi
    echo -e "\nYour AWS region will be : $aws_region2\n"
+   echo -e "\nYour Default Nodegroup name with 4 vCPUs will be :- marketplace-userapp\n"
+   
+   echo -e "\nYour Default Nodegroup name with 2 vCPUs will be :- marketplace-browsersession\n"
 
 #    read -p "Enter the name of node group (default name - worker) : " ng_name
 #    if [[ -z $ng_name ]]
@@ -157,9 +160,10 @@ EOF"
   set -e
   eksctl create cluster -f cluster.yaml
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
-    aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+  aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
     
-    read -p "Enter your AWS Account ID : " aws_account_id
+  read -p "Enter your AWS Account ID : " aws_account_id
+  
 
     
     aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
@@ -251,8 +255,16 @@ else
   else
   echo -e "\nEnter your two nodegroups name.\n"
   read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
+  if [[ -z $n_ng_1 ]]
+   then
+    n_ng_1=marketplace-userapp
+   fi
   echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
   read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
+  if [[ -z $n_ng_2 ]]
+   then
+    n_ng_2=marketplace-browsersession
+   fi
   echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
 
   
@@ -260,8 +272,16 @@ else
   echo -e "Enter your cluster details.\n"
   
   read -p "Enter your previously created cluster name : " p_cluster_name
+  if [[ -z $p_cluster_name ]]
+   then
+    p_cluster_name=marketplace
+   fi
 
   read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
+  if [[ -z $p_aws_region ]]
+   then
+    p_aws_region=us-east-1
+  fi
   
   read -p "Enter your AWS Account ID : " aws_account_id
   
