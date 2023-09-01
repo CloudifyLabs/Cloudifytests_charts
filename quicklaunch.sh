@@ -8,7 +8,7 @@ sudo rm /home/$USER/.kube/config
 
 
  # Git clone the repository
-sudo git clone  https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone --branch PL-3242 https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
 sudo chmod 777 Cloudifytests_charts
@@ -35,6 +35,9 @@ fi
 
 aws configure
 
+default_region=$(aws configure get region)
+default_access_key=$(aws configure get aws_access_key_id)
+default_secret_key=$(aws configure get aws_secret_access_key)
 
 
 echo -e "\nKindly check all the details in cluster.yaml If you want to create the cluster.\n"
@@ -51,12 +54,15 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    echo -e "\nYour Cluster Name will be : $cluster_name2\n"
 
 
-   read -p "Enter your AWS region where you want to create your cluster (default AWS region - us-east-1): " aws_region2
+   read -p "Enter your default AWS region where you want to create your cluster (default AWS region - us-east-): " aws_region2
    if [[ -z $aws_region2 ]]
    then
     aws_region2=us-east-1
    fi
    echo -e "\nYour AWS region will be : $aws_region2\n"
+   echo -e "\nYour Default Nodegroup name with 4 vCPUs will be :- marketplace-userapp\n"
+   
+   echo -e "\nYour Default Nodegroup name with 2 vCPUs will be :- marketplace-browsersession\n"
 
 #    read -p "Enter the name of node group (default name - worker) : " ng_name
 #    if [[ -z $ng_name ]]
@@ -157,9 +163,20 @@ EOF"
   set -e
   eksctl create cluster -f cluster.yaml
   eksctl create addon --name aws-ebs-csi-driver --cluster $cluster_name2
-    aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+  aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
     
-    read -p "Enter your AWS Account ID : " aws_account_id
+#  read -p "Enter your AWS Account ID : " aws_account_id
+while true; do
+  echo -n "Your AWS Account ID: "
+  read aws_account_id
+  if [[ "$aws_account_id"  != "" ]]
+    then
+     echo -e "\nYour AWS ID is : $aws_account_id\n"
+    break
+  fi
+done
+
+  
 
     
     aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
@@ -251,8 +268,16 @@ else
   else
   echo -e "\nEnter your two nodegroups name.\n"
   read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
+  if [[ -z $n_ng_1 ]]
+   then
+    n_ng_1=marketplace-userapp
+   fi
   echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
   read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
+  if [[ -z $n_ng_2 ]]
+   then
+    n_ng_2=marketplace-browsersession
+   fi
   echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
 
   
@@ -260,10 +285,42 @@ else
   echo -e "Enter your cluster details.\n"
   
   read -p "Enter your previously created cluster name : " p_cluster_name
+  if [[ -z $p_cluster_name ]]
+   then
+    p_cluster_name=marketplace
+   fi
+   echo -e "\nYour Cluster name. : $p_cluster_name\n" 
 
-  read -p "Enter your AWS region where you have previously created the cluster : " p_aws_region
+  read -p "Enter your default AWS region name : " p_aws_region
+  if [[ -z $p_aws_region ]]
+   then
+    p_aws_region=$default_region
+  fi
+  echo -e "\nYour default AWS region name. : $p_aws_region\n"
   
-  read -p "Enter your AWS Account ID : " aws_account_id
+ # read -p "Enter your AWS Account ID : " aws_account_id
+ while true; do
+  echo -n "Your AWS Account ID: "
+  read aws_account_id
+  if [[ "$aws_account_id"  != "" ]]
+    then
+     echo -e "\nYour AWS ID is : $aws_account_id\n"
+    break
+  fi
+done
+
+eksctl get nodegroup --cluster=$p_cluster_name --region=$p_aws_region  1>/dev/null  2>/dev/null
+eks_cluster=$(echo $?)
+
+if [[ "$eks_cluster" -ne 0 ]]
+  then
+  echo -e "\nNO Cluster Found\n"
+  exit 0
+else
+  echo -e "\nCluster Found\n"
+  
+fi
+
   
 
  aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
@@ -372,16 +429,35 @@ do
 # Define the AWS access key and secret key as input by the user
 
 read -p "Enter your AWS access key: " aws_key
+if [[ -z $aws_key ]]
+   then
+    aws_key=$default_access_key
+  fi
 echo -e "\nYour AWS access key is : $aws_key\n"
-read -p "Enter your AWS secret key: " aws_secret_key
+
+
+read -p "Enter your AWS secret access key: " aws_secret_key
+if [[ -z $aws_secret_key ]]
+   then
+    aws_secret_key=$default_secret_key
+  fi
 echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
 
 # Define the base URL and ingress host as input by the user
-
-
 # Define the AWS S3 bucket name and default region as input by the user
-read -p "Enter your AWS default region: " aws_region
-echo -e "\nYour AWS default region is : $aws_region\n"
+#read -p "Enter your AWS default region: " aws_region
+#echo -e "\nYour AWS default region is : $aws_region\n"
+
+
+read -p "Enter your default AWS region name : " aws_region
+  if [[ -z $aws_region ]]
+   then
+    aws_region=$default_region
+  fi
+  echo -e "\nYour default AWS region name. : $aws_region\n"
+
+
+
 echo -e "\nConditions for Bucket name.\n- Capital letters are not allowed. \n- Should start and end with digits or alphabet. \n- Spaces are not allowed. \n- Allowed alphabets , digits and - \n- Minimum 3 and Maximum 63 characters.\nDon't use test keyword in the bucket name.\nPlease do not use test keyword in your bucket name.\n"
 
 read -p "Enter the Bucket name: " s3_bucket

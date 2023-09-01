@@ -4,9 +4,12 @@
 This document provides the steps for installing the Cloudifytests product from AWS Marketplace.
 
 ## Prerequisites
-1. If you don't have any cluster then you can use our ClusterConfig file to create cluster.
-2. If you have a pre configured cluster then you need to have two nodegroups.
-
+1. AWS User should have the following access:
+    * Marketplace Full Access.
+    * ECR Full Access.
+    * EKS Full Access.
+2. If you don't have any cluster then you can use our ClusterConfig file to create cluster.
+3. If you have a pre configured cluster then you need to have two nodegroups.
 
           1st NodeGroup with 4 Vcpus.
           2nd NodeGroup with 2 Vcpus.
@@ -48,7 +51,7 @@ All of the fields listed above must be provided by the user in order for the scr
 #### To launch Cloudify Tests using the Quick Launch method, run the following command:
 
       
-        wget -qO quicklaunch.sh 'https://raw.githubusercontent.com/CloudifyLabs/Cloudifytests_charts/main/quicklaunch.sh' && bash quicklaunch.sh
+        wget -qO quicklaunch.sh 'https://raw.githubusercontent.com/CloudifyLabs/Cloudifytests_charts/PL-3242/quicklaunch.sh' && bash quicklaunch.sh
        
 
 Once the script has completed execution, the application will be deployed to your Kubernetes cluster in the specified namespace. You can use the LoadBalancer URL to access the application. 
