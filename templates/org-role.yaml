@@ -3,7 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: {{ template "cloudifytests.name" . }}
-  namespace: {{ .Values.role.metadata.namespace }}
+  namespace: {{ .Values.smlogsvalues.ORG_NAME }}
   annotations:
     helm.sh/hook: pre-install
 rules:
@@ -22,7 +22,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ template "cloudifytests.name" . }}
-  namespace: {{ .Values.roleBinding.metadata.namespace }}
+  namespace: {{ .Values.smlogsvalues.ORG_NAME }}
   annotations:
     helm.sh/hook: pre-install
 roleRef:
