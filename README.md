@@ -7,9 +7,7 @@ This document provides the steps for installing the Cloudifytests product from A
  AWS User should have the following access:
  
     * Marketplace Full Access.
-    
     * ECR Full Access.
-    
     * EKS Full Access.
 
  #### If you have all the prerequisites then you can run or re-run the below cmd.
