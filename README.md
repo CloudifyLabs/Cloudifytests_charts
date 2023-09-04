@@ -4,26 +4,11 @@
 This document provides the steps for installing the Cloudifytests product from AWS Marketplace.
 
 ## Prerequisites
-1. AWS User should have the following access:
+ AWS User should have the following access:
     * Marketplace Full Access.
     * ECR Full Access.
     * EKS Full Access.
-2. If you don't have any cluster then you can use our ClusterConfig file to create cluster.
-3. If you have a pre configured cluster then you need to have two nodegroups.
 
-          1st NodeGroup with 4 Vcpus.
-          2nd NodeGroup with 2 Vcpus.
-          
-##### Use this commands to create your NodeGroup.
-To create 4 vcpus Nodegroup.
-     
-          eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=<Use 4vcpus Machine> --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --nodes=1
-          
-To create 2 vcpus Nodegroup.
-     
-          eksctl create nodegroup --cluster=<Cluster Name> --name=<NodeGroup Name> --region=<AWS default region> --node-type=<Use 2vcpus Machine> --nodes-max=<maximum nodes> --nodes-min=<minimum-nodes>  --nodes=1
- 
- 
  #### If you have all the prerequisites then you can run or re-run the below cmd.
      
                 
@@ -55,6 +40,15 @@ All of the fields listed above must be provided by the user in order for the scr
        
 
 Once the script has completed execution, the application will be deployed to your Kubernetes cluster in the specified namespace. You can use the LoadBalancer URL to access the application. 
+
+
+
+
+
+
+     
+                
+
 
 
 
