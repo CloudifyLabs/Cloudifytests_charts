@@ -396,7 +396,7 @@ EOF"
 
   fi
   
-fi
+
 
 flag=true
 # # Define the name of the namespace as input by the user
