@@ -54,7 +54,7 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    echo -e "\nYour Cluster Name will be : $cluster_name2\n"
 
 
-   read -p "Enter your default AWS region where you want to create your cluster (default AWS region - us-east-): " aws_region2
+   read -p "Enter your default AWS region where you want to create your cluster : " aws_region2
    if [[ -z $aws_region2 ]]
    then
     aws_region2=us-east-1
@@ -256,33 +256,33 @@ EOF"
 
 
 else 
-  echo -e "\nThis application will be deployed on your own Cluster.\n"
-  echo -e "- For this application you need two nodegroups.\n"
-  echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
-  echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
+  #echo -e "\nThis application will be deployed on your own Cluster.\n"
+ # echo -e "- For this application you need two nodegroups.\n"
+  # echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
+  # echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
   
-  read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
-  if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
-  echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
-  exit 1  
-  else
-  echo -e "\nEnter your two nodegroups name.\n"
-  read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
-  if [[ -z $n_ng_1 ]]
-   then
-    n_ng_1=marketplace-userapp
-   fi
-  echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
-  read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
-  if [[ -z $n_ng_2 ]]
-   then
-    n_ng_2=marketplace-browsersession
-   fi
-  echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
+  # read -p " If you have already created the cluster using our script then Enter the Nodegroup Name : " flag2
+  # if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
+  # echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
+  # exit 1  
+  # else
+  # echo -e "\nEnter your two nodegroups name.\n"
+  # read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
+  # if [[ -z $n_ng_1 ]]
+  #  then
+  #   n_ng_1=marketplace-userapp
+  #  fi
+  # echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
+  # read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
+  # if [[ -z $n_ng_2 ]]
+  #  then
+  #   n_ng_2=marketplace-browsersession
+  #  fi
+  # echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
 
-  
+  echo -e "\nIf you have already created the cluster using our script then Enter the cluster Name.\n"
    
-  echo -e "Enter your cluster details.\n"
+ # echo -e "Enter your cluster details.\n"
   
   read -p "Enter your previously created cluster name : " p_cluster_name
   if [[ -z $p_cluster_name ]]
@@ -290,8 +290,10 @@ else
     p_cluster_name=marketplace
    fi
    echo -e "\nYour Cluster name. : $p_cluster_name\n" 
+
+  # echo -e "\nIf you have already created the cluster using our script then Enter the Nodegroup Name.\n"
   
- # read -p "Enter your AWS Account ID : " aws_account_id
+ read -p "Enter your AWS Account ID : " aws_account_id
  while true; do
   echo -n "Your AWS Account ID: "
   read aws_account_id
@@ -320,9 +322,9 @@ fi
  
  
   eksctl create addon --name aws-ebs-csi-driver --cluster $p_cluster_name
-  aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+  #aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
  
-  aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
+  #aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
   
   
   kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
