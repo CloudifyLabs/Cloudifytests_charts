@@ -293,7 +293,7 @@ else
 
   # echo -e "\nIf you have already created the cluster using our script then Enter the Nodegroup Name.\n"
   
- read -p "Enter your AWS Account ID : " aws_account_id
+# read -p "Enter your AWS Account ID : " aws_account_id
  while true; do
   echo -n "Your AWS Account ID: "
   read aws_account_id
