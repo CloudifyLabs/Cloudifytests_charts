@@ -37,7 +37,7 @@ All of the fields listed above must be provided by the user in order for the scr
 #### To launch Cloudify Tests using the Quick Launch method, run the following command:
 
       
-   wget -qO quicklaunch.sh 'https://raw.githubusercontent.com/CloudifyLabs/Cloudifytests_charts/PL-3256/quicklaunch.sh' && bash quicklaunch.sh
+    wget -qO quicklaunch.sh 'https://raw.githubusercontent.com/CloudifyLabs/Cloudifytests_charts/PL-3256/quicklaunch.sh' && bash quicklaunch.sh
        
 
 Once the script has completed execution, the application will be deployed to your Kubernetes cluster in the specified namespace. You can use the LoadBalancer URL to access the application. 
