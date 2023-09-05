@@ -506,17 +506,61 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "test" || $s3_buck
 
 # Define the AWS ECR image repository and tag as input by the user
 
-read -p "Enter your CONTAINER IMAGES repository link for smcreate: " create
-echo -e "\nYour AWS ECR image repository tag is : $create\n"
+#read -p "Enter your CONTAINER IMAGES repository link for smcreate: " create
+#echo -e "\nYour AWS ECR image repository tag is : $create\n"
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for smcreate: "
+  read create
+  if [[ "$create"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for smcreate is : $create\n"
+    break
+  fi
+done
 
-read -p "Enter your CONTAINER IMAGES repository link for sessionUi: " Ui
-echo -e "\nYour AWS ECR image repository tag is : $Ui\n"
 
-read -p "Enter your CONTAINER IMAGES repository link for sessionbe: " be
-echo -e "\nYour AWS ECR image repository tag is : $be\n"
+#read -p "Enter your CONTAINER IMAGES repository link for sessionUi: " Ui
+#echo -e "\nYour AWS ECR image repository tag is : $Ui\n"
 
-read -p "Enter your CONTAINER IMAGES repository link for smdelete: " delete
-echo -e "\nYour AWS ECR image repository tag is : $delete\n"
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for sessionUi: "
+  read Ui
+  if [[ "$Ui"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for Ui is : $Ui\n"
+    break
+  fi
+done
+
+
+#read -p "Enter your CONTAINER IMAGES repository link for sessionbe: " be
+#echo -e "\nYour AWS ECR image repository tag is : $be\n"
+
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for sessionbe: "
+  read be
+  if [[ "$be"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for sessionbe is : $be\n"
+    break
+  fi
+done
+
+
+#read -p "Enter your CONTAINER IMAGES repository link for smdelete: " delete
+#echo -e "\nYour AWS ECR image repository tag is : $delete\n"
+
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for smdelete: "
+  read delete
+  if [[ "$delete"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for smdelete is : $delete\n"
+    break
+  fi
+done
+
+
 
 # read -p "Enter the tag for sessionbe: " sessionbe_tag
 # echo -e "\nYour sessiobe tag is : $sessionbe_tag\n"
