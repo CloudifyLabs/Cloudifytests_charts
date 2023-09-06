@@ -8,7 +8,7 @@ sudo rm /home/$USER/.kube/config
 
 
  # Git clone the repository
-sudo git clone https://github.com/CloudifyLabs/Cloudifytests_charts.git
+sudo git clone --branch PL-3256 https://github.com/CloudifyLabs/Cloudifytests_charts.git
 
 # # Change into the cloned repository directory
 sudo chmod 777 Cloudifytests_charts
@@ -54,7 +54,7 @@ if [[ $flag == "yes" || $flag == "Yes" ]]; then
    echo -e "\nYour Cluster Name will be : $cluster_name2\n"
 
 
-   read -p "Enter your default AWS region where you want to create your cluster (default AWS region - us-east-): " aws_region2
+   read -p "Enter your default AWS region where you want to create your cluster : " aws_region2
    if [[ -z $aws_region2 ]]
    then
     aws_region2=us-east-1
@@ -179,7 +179,7 @@ done
   
 
     
-    aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+  aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-userapp --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
  
   aws eks update-nodegroup-config --cluster-name $cluster_name2  --nodegroup-name marketplace-browsersession --region $aws_region2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
   
@@ -256,33 +256,33 @@ EOF"
 
 
 else 
-  echo -e "\nThis application will be deployed on your own Cluster.\n"
-  echo -e "- For this application you need two nodegroups.\n"
-  echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
-  echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
+  #echo -e "\nThis application will be deployed on your own Cluster.\n"
+ # echo -e "- For this application you need two nodegroups.\n"
+  # echo -e "- First nodegroup should have 4 Vcpus and other nodegroup should have 2 Vcpus.\n"
+  # echo -e "- If you dont have the following NodeGroups please create your NodeGroups.\n\n"
   
-  read -p "Enter Yes to create NodeGroup or Enter No If you have already created the nodegroup : " flag2
-  if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
-  echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
-  exit 1  
-  else
-  echo -e "\nEnter your two nodegroups name.\n"
-  read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
-  if [[ -z $n_ng_1 ]]
-   then
-    n_ng_1=marketplace-userapp
-   fi
-  echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
-  read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
-  if [[ -z $n_ng_2 ]]
-   then
-    n_ng_2=marketplace-browsersession
-   fi
-  echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
+  # read -p " If you have already created the cluster using our script then Enter the Nodegroup Name : " flag2
+  # if [[ $flag2 == "yes" || $flag2 == "Yes" ]]; then 
+  # echo -e "\nTo create NodeGroup please follow the instructions in the Readme and re-run the command.\n"
+  # exit 1  
+  # else
+  # echo -e "\nEnter your two nodegroups name.\n"
+  # read -p "Enter your 1st NodeGroup name with 4 Vcpus : " n_ng_1
+  # if [[ -z $n_ng_1 ]]
+  #  then
+  #   n_ng_1=marketplace-userapp
+  #  fi
+  # echo -e "\nYour 1st NodeGroup name. $n_ng_1\n" 
+  # read -p "Enter your 2nd NodeGroup name with 2 Vcpus : " n_ng_2
+  # if [[ -z $n_ng_2 ]]
+  #  then
+  #   n_ng_2=marketplace-browsersession
+  #  fi
+  # echo -e "\nYour 2nd NodeGroup name. $n_ng_2\n" 
 
-  
+  echo -e "\nIf you have already created the cluster using our script then Enter the cluster Name.\n"
    
-  echo -e "Enter your cluster details.\n"
+ # echo -e "Enter your cluster details.\n"
   
   read -p "Enter your previously created cluster name : " p_cluster_name
   if [[ -z $p_cluster_name ]]
@@ -291,14 +291,9 @@ else
    fi
    echo -e "\nYour Cluster name. : $p_cluster_name\n" 
 
-  read -p "Enter your default AWS region name : " p_aws_region
-  if [[ -z $p_aws_region ]]
-   then
-    p_aws_region=$default_region
-  fi
-  echo -e "\nYour default AWS region name. : $p_aws_region\n"
+  # echo -e "\nIf you have already created the cluster using our script then Enter the Nodegroup Name.\n"
   
- # read -p "Enter your AWS Account ID : " aws_account_id
+# read -p "Enter your AWS Account ID : " aws_account_id
  while true; do
   echo -n "Your AWS Account ID: "
   read aws_account_id
@@ -309,7 +304,7 @@ else
   fi
 done
 
-eksctl get nodegroup --cluster=$p_cluster_name --region=$p_aws_region  1>/dev/null  2>/dev/null
+eksctl get nodegroup --cluster=$p_cluster_name --region=$default_region  1>/dev/null  2>/dev/null
 eks_cluster=$(echo $?)
 
 if [[ "$eks_cluster" -ne 0 ]]
@@ -323,13 +318,13 @@ fi
 
   
 
- aws eks update-kubeconfig --name $p_cluster_name --region $p_aws_region
+ aws eks update-kubeconfig --name $p_cluster_name --region $default_region
  
  
   eksctl create addon --name aws-ebs-csi-driver --cluster $p_cluster_name
-   aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
+  #aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_1  --taints "addOrUpdateTaints=[{key=marketplace-userapp, value=true, effect=NO_SCHEDULE}]"
  
-  aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
+  #aws eks update-nodegroup-config --cluster-name $p_cluster_name  --nodegroup-name $n_ng_2  --taints "addOrUpdateTaints=[{key=marketplace-browsersession, value=true, effect=NO_SCHEDULE}]" 
   
   
   kubectl patch deployment coredns -p '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
@@ -338,7 +333,7 @@ fi
 
   helm repo add autoscaler https://kubernetes.github.io/autoscaler
 
-   helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$p_aws_region
+   helm install my-release autoscaler/cluster-autoscaler --set  'autoDiscovery.clusterName'=$p_cluster_name  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$default_region
  
 
   kubectl patch deployment ebs-csi-controller -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
@@ -354,7 +349,7 @@ fi
  aws iam create-policy --policy-name MarketplaceAWSLoadBalancerControllerIAMPolicy --policy-document file://iam_policy.json
  oidc_id=$(aws eks describe-cluster --name $p_cluster_name --query "cluster.identity.oidc.issuer" --output text | cut -d '/' -f 5)
  echo $oidc_id
- eksctl utils associate-iam-oidc-provider --region=$p_aws_region --cluster=$p_cluster_name --approve
+ eksctl utils associate-iam-oidc-provider --region=$default_region --cluster=$p_cluster_name --approve
  cat >load-balancer-role-trust-policy.json <<EOF
 {
      "Version": "2012-10-17",
@@ -362,13 +357,13 @@ fi
          {
              "Effect": "Allow",
              "Principal": {
-                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id"
+                 "Federated": "arn:aws:iam::$aws_account_id:oidc-provider/oidc.eks.$default_region.amazonaws.com/id/$oidc_id"
              },
              "Action": "sts:AssumeRoleWithWebIdentity",
              "Condition": {
                  "StringEquals": {
-                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
-                     "oidc.eks.$p_aws_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
+                     "oidc.eks.$default_region.amazonaws.com/id/$oidc_id:aud": "sts.amazonaws.com",
+                     "oidc.eks.$default_region.amazonaws.com/id/$oidc_id:sub": "system:serviceaccount:kube-system:aws-load-balancer-controller"
                  }
              }
          }
@@ -396,12 +391,12 @@ EOF"
  kubectl apply -f aws-load-balancer-controller-service-account.yaml
  helm repo add eks https://aws.github.io/eks-charts
  helm repo update
- helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$p_cluster_name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=$n_ng_1 --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$p_cluster_name
+ helm install aws-load-balancer-controller eks/aws-load-balancer-controller -n kube-system --set clusterName=$p_cluster_name --set serviceAccount.create=false --set serviceAccount.name=aws-load-balancer-controller  --set tolerations[0].key=marketplace-userapp --set-string tolerations[0].value=true --set tolerations[0].operator=Equal --set tolerations[0].effect=NoSchedule  --set awsRegion=$default_region
 
 
   fi
   
-fi
+
 
 flag=true
 # # Define the name of the namespace as input by the user
@@ -428,33 +423,33 @@ do
 
 # Define the AWS access key and secret key as input by the user
 
-read -p "Enter your AWS access key: " aws_key
-if [[ -z $aws_key ]]
-   then
-    aws_key=$default_access_key
-  fi
-echo -e "\nYour AWS access key is : $aws_key\n"
+# read -p "Enter your AWS access key: " aws_key
+# if [[ -z $aws_key ]]
+#    then
+#     aws_key=$default_access_key
+#   fi
+# echo -e "\nYour AWS access key is : $aws_key\n"
 
 
-read -p "Enter your AWS secret access key: " aws_secret_key
-if [[ -z $aws_secret_key ]]
-   then
-    aws_secret_key=$default_secret_key
-  fi
-echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
+# read -p "Enter your AWS secret access key: " aws_secret_key
+# if [[ -z $aws_secret_key ]]
+#    then
+#     aws_secret_key=$default_secret_key
+#   fi
+# echo -e "\nYour AWS secret access key is : $aws_secret_key\n"
 
-# Define the base URL and ingress host as input by the user
-# Define the AWS S3 bucket name and default region as input by the user
-#read -p "Enter your AWS default region: " aws_region
-#echo -e "\nYour AWS default region is : $aws_region\n"
+# # Define the base URL and ingress host as input by the user
+# # Define the AWS S3 bucket name and default region as input by the user
+# #read -p "Enter your AWS default region: " aws_region
+# #echo -e "\nYour AWS default region is : $aws_region\n"
 
 
-read -p "Enter your default AWS region name : " aws_region
-  if [[ -z $aws_region ]]
-   then
-    aws_region=$default_region
-  fi
-  echo -e "\nYour default AWS region name. : $aws_region\n"
+# read -p "Enter your default AWS region name : " aws_region
+#   if [[ -z $aws_region ]]
+#    then
+#     aws_region=$default_region
+#   fi
+#   echo -e "\nYour default AWS region name. : $aws_region\n"
 
 
 
@@ -471,7 +466,7 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "test" || $s3_buck
     #flag2=true
     if [[ -n "$s3_bucket" ]] 
     then
-      if [[ $aws_region == "us-east-1" ]]
+      if [[ $default_region == "us-east-1" ]]
       then 
          aws s3 ls $s3_bucket 2>/dev/null
          var=$(echo $?)
@@ -481,7 +476,7 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "test" || $s3_buck
           echo -e "\nEnter AWS Access key , Secret access key and AWS Region again.\n"
           flag2=true
         else
-          aws s3api create-bucket --bucket=$s3_bucket --region=$aws_region
+          aws s3api create-bucket --bucket=$s3_bucket --region=$default_region
           echo -e "\nBucket created with name $s3_bucket"
           break
         fi
@@ -496,7 +491,7 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "test" || $s3_buck
         echo -e "\nEnter AWS Access key , Secret access key and AWS Region again.\n"
         flag2=true
       else
-       aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$aws_region
+       aws s3api create-bucket --bucket=$s3_bucket --create-bucket-configuration LocationConstraint=$default_region
        echo -e "\nBucket created with name $s3_bucket"
        break
        fi
@@ -511,17 +506,61 @@ if [[ $s3_bucket == *['!'@#\$%^\&*()_+?~/=]* || $s3_bucket =~ "test" || $s3_buck
 
 # Define the AWS ECR image repository and tag as input by the user
 
-read -p "Enter your CONTAINER IMAGES repository link for smcreate: " create
-echo -e "\nYour AWS ECR image repository tag is : $create\n"
+#read -p "Enter your CONTAINER IMAGES repository link for smcreate: " create
+#echo -e "\nYour AWS ECR image repository tag is : $create\n"
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for smcreate: "
+  read create
+  if [[ "$create"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for smcreate is : $create\n"
+    break
+  fi
+done
 
-read -p "Enter your CONTAINER IMAGES repository link for sessionUi: " Ui
-echo -e "\nYour AWS ECR image repository tag is : $Ui\n"
 
-read -p "Enter your CONTAINER IMAGES repository link for sessionbe: " be
-echo -e "\nYour AWS ECR image repository tag is : $be\n"
+#read -p "Enter your CONTAINER IMAGES repository link for sessionUi: " Ui
+#echo -e "\nYour AWS ECR image repository tag is : $Ui\n"
 
-read -p "Enter your CONTAINER IMAGES repository link for smdelete: " delete
-echo -e "\nYour AWS ECR image repository tag is : $delete\n"
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for sessionUi: "
+  read Ui
+  if [[ "$Ui"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for Ui is : $Ui\n"
+    break
+  fi
+done
+
+
+#read -p "Enter your CONTAINER IMAGES repository link for sessionbe: " be
+#echo -e "\nYour AWS ECR image repository tag is : $be\n"
+
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for sessionbe: "
+  read be
+  if [[ "$be"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for sessionbe is : $be\n"
+    break
+  fi
+done
+
+
+#read -p "Enter your CONTAINER IMAGES repository link for smdelete: " delete
+#echo -e "\nYour AWS ECR image repository tag is : $delete\n"
+
+while true; do
+  echo -n "Enter your CONTAINER IMAGES repository link for smdelete: "
+  read delete
+  if [[ "$delete"  != "" ]]
+    then
+     echo -e "\nYour AWS ECR image repository for smdelete is : $delete\n"
+    break
+  fi
+done
+
+
 
 # read -p "Enter the tag for sessionbe: " sessionbe_tag
 # echo -e "\nYour sessiobe tag is : $sessionbe_tag\n"
@@ -540,7 +579,7 @@ echo -e "\nYour AWS ECR image repository tag is : $delete\n"
 
 
 # Update KubeConfig
-# aws eks update-kubeconfig --name $cluster_name2 --region $aws_region2
+ #aws eks update-kubeconfig --name $cluster_name2 --region $default_region
  
  kubectl patch deployment coredns -p  '{"spec":{"template":{"spec":{"tolerations":[{"effect":"NoSchedule","key":"marketplace-userapp","value":"true"}]}}}}' -n kube-system
 
@@ -554,11 +593,11 @@ kubectl create namespace $org_name
 
 # Apply the Helm chart using the inputs provided by the user
 helm template . \
---set s3microservices.AWS_ACCESS_KEY_ID=$aws_key \
---set s3microservices.AWS_SECRET_ACCESS_KEY=$aws_secret_key \
+--set s3microservices.AWS_ACCESS_KEY_ID=$default_access_key \
+--set s3microservices.AWS_SECRET_ACCESS_KEY=$default_secret_key \
 --set urls.BASE_URL=http://cloudifytests-session-be.$org_name.svc.cluster.local:5000/ \
 --set s3microservices.S3_BUCKET=$s3_bucket \
---set s3microservices.AWS_DEFAULT_REGION=$aws_region \
+--set s3microservices.AWS_DEFAULT_REGION=$default_region \
 --set sessionbe.serviceAccountName=$org_name --set nginxhpa.metadata.namespace=$org_name \
 --set be.ORG_NAME=$org_name \
 --set sessionbe.image.repository="$be" \
