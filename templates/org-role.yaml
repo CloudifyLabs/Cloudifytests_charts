@@ -8,8 +8,8 @@ metadata:
     helm.sh/hook: pre-install
 rules:
 - apiGroups: ["*"]
-  resources: ["pods","pods/portforward"]
-  verbs: ["get", "list", "watch", "create", "delete"]
+  resources: ["pods","pods/portforward","deployments"]
+  verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
 - apiGroups: ["*"]
   resources: ["pods/log"]
   verbs: ["get", "list", "watch"]
