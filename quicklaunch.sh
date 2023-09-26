@@ -421,6 +421,11 @@ flag2=true
 while $flag2 :
 do
 
+# # Define the email of the user as input by the user
+echo -e "\nConditions for Namespace name.\n- Capital letters are not allowed. \n- Should start and end with digits or alphabet. \n- Spaces are not allowed. \n- Allowed alphabets , digits and - \n- Minimum 3 and Maximum 20 characters.\n"
+
+read -p "Enter your email-id: " email
+
 # Define the AWS access key and secret key as input by the user
 
 # read -p "Enter your AWS access key: " aws_key
@@ -606,6 +611,7 @@ helm template . \
 --set smdelete.image.repository="$delete" \
 --set sessionmanager.AWS_ECR_IMAGE=public.ecr.aws/r2h8i7a4 \
 --set smlogsvalues.ORG_NAME=$org_name \
+--set smlogsvalues.EMAIL=$email \
 --set behpa.metadata.namespace=$org_name --set sessionManagaerhpa.metadata.namespace=$org_name \
 --set role.metadata.namespace=$org_name --set roleBinding.metadata.namespace=$org_name \
 --set smcreatehpa.metadata.namespace=$org_name --set smdeletehpa.metadata.namespace=$org_name \
