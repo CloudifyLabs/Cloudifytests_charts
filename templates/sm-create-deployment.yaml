@@ -77,7 +77,7 @@ spec:
         - name: ENV
           value: stg
         - name: LICENSE_URL
-          value: https://app.cloudifytests.com/license_api/
+          value: https://stg-app.cloudifytests.io/license_api/
         {{ if eq .Values.SETUP_METHOD "aws" }}
         - name: AWS_ACCESS_KEY_ID
           value: {{ .Values.s3microservices.AWS_ACCESS_KEY_ID }}
