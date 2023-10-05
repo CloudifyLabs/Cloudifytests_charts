@@ -20,6 +20,10 @@
           "medium": "Memory",
           "sizeLimit": 0
         }
+      },
+      {
+        "name": "getfile",
+        "emptyDir": { }
       }
     ],
     "containers": [
@@ -111,6 +115,10 @@
           {
             "mountPath": "/dev/shm",
             "name": "dshm"
+          },
+          {
+            "name": "getfile",
+            "mountPath": "/home/selenium/Downloads"
           }
         ]
       },
@@ -239,7 +247,13 @@
             "cpu": "100m",
             "memory": "200Mi"
           }
-        }
+        },
+        "volumeMounts": [
+         {
+            "name": "getfile",
+            "mountPath": "/Downloads"
+         }
+        ]
       },
       {
         "name": "recorder",
