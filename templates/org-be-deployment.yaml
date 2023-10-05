@@ -81,7 +81,7 @@ spec:
         - name: TUNNEL_LIMIT
           value: "5"
         - name: LICENSE_URL
-          value: https://app.cloudifytests.com/license_api/
+          value: https://stg-app.cloudifytests.io/license_api/
         - name: LICENSE_KEY
           value: test
         - name: EMAIL
